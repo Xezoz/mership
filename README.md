@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mership - Reshipping Platform
+
+A modern reshipping platform built with Next.js 15, Supabase, and shadcn/ui.
+
+## Features
+
+- 🔐 **Authentication** - Complete auth flow with login, signup, and password reset
+- 📊 **Dashboard** - Analytics dashboard with stats cards and visitor charts
+- 📦 **Inventory Management** - Manage inventory items with search and filtering
+- 🎨 **Modern UI** - Dark mode with shadcn/ui components
+- 🔒 **Secure** - Row Level Security (RLS) with Supabase
+- 📱 **Responsive** - Mobile-friendly design
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS v3
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd mership
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Supabase Setup
+
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
+
+2. Run the database schema:
+   - Go to the SQL Editor in your Supabase dashboard
+   - Copy and run the contents of `supabase/schema.sql`
+   - Copy and run the contents of `supabase/rls-policies.sql`
+
+3. Get your project credentials:
+   - Go to Project Settings > API
+   - Copy the Project URL and anon/public key
+   - Add them to your `.env.local` file
+
+### Running the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Building for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+mership/
+├── src/
+│   ├── app/
+│   │   ├── (auth)/          # Authentication pages
+│   │   │   ├── login/
+│   │   │   ├── signup/
+│   │   │   ├── forgot-password/
+│   │   │   └── reset-password/
+│   │   ├── (dashboard)/     # Dashboard pages
+│   │   │   ├── dashboard/
+│   │   │   └── inventory/
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── ui/              # shadcn/ui components
+│   │   ├── sidebar.tsx
+│   │   ├── header.tsx
+│   │   ├── stats-card.tsx
+│   │   └── visitor-chart.tsx
+│   ├── lib/
+│   │   ├── supabase/        # Supabase configuration
+│   │   └── utils.ts
+│   └── middleware.ts        # Auth middleware
+├── supabase/
+│   ├── schema.sql           # Database schema
+│   └── rls-policies.sql     # Security policies
+└── public/
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features Overview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Authentication
+- Email/password authentication
+- Email verification
+- Password reset flow
+- Protected routes with middleware
 
-## Deploy on Vercel
+### Dashboard
+- Revenue statistics
+- Customer metrics
+- Active accounts tracking
+- Growth rate indicators
+- Visitor analytics with time period filters
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Inventory Management
+- Add/edit/delete inventory items
+- Search and filter functionality
+- Stock status tracking
+- Category management
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon/public key |
+| `NEXT_PUBLIC_APP_URL` | Your application URL |
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT License - feel free to use this project for your own purposes.
