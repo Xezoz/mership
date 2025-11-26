@@ -22,7 +22,7 @@ export async function POST(request: Request) {
         }
 
         const event = JSON.parse(body);
-        const supabase = createAdminClient();
+        const supabase: any = createAdminClient();
 
         // Handle specific events
         // Note: Adjust event names based on actual Whop webhook documentation
@@ -33,8 +33,9 @@ export async function POST(request: Request) {
             if (transactionId) {
                 // Update transaction status
                 const { error: updateError } = await supabase
+                // Update transaction status
+                const { error: updateError } = await supabase
                     .from('transactions')
-                    // @ts-ignore
                     .update({ status: 'completed' })
                     .eq('id', transactionId);
 
@@ -64,7 +65,6 @@ export async function POST(request: Request) {
 
                     await supabase
                         .from('profiles')
-                        // @ts-ignore
                         .update({ balance: newBalance })
                         .eq('id', transaction.user_id);
                 }
