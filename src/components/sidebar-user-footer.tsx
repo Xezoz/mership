@@ -35,7 +35,7 @@ export function SidebarUserFooter() {
                     .single()
 
                 if (error) {
-                    console.error('Error fetching profile:', error)
+                    console.error('Error fetching profile:', error.message, error.code, error.details)
                     setLoading(false)
                     return
                 }
@@ -74,7 +74,7 @@ export function SidebarUserFooter() {
 
     if (!profile) return null
 
-    if (!profile) return null
+
 
     return (
         <div className="p-4 border-t bg-card">
