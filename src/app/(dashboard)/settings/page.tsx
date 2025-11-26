@@ -394,7 +394,17 @@ export default function SettingsPage() {
                     </>
                 )}
 
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center pt-6 border-t">
+                    <Button
+                        variant="destructive"
+                        onClick={async () => {
+                            await supabase.auth.signOut()
+                            router.push('/login')
+                        }}
+                    >
+                        Sign Out
+                    </Button>
+
                     <Button onClick={handleSave} disabled={saving} className="gap-2">
                         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                         Save Changes
