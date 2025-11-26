@@ -34,7 +34,7 @@ export async function POST(request: Request) {
                 // Update transaction status
                 const { error: updateError } = await supabase
                     .from('transactions')
-                    .update({ status: 'completed' })
+                    .update({ status: 'completed' } as any)
                     .eq('id', transactionId);
 
                 if (updateError) {
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
                     await supabase
                         .from('profiles')
-                        .update({ balance: newBalance })
+                        .update({ balance: newBalance } as any)
                         .eq('id', transaction.user_id);
                 }
             }
