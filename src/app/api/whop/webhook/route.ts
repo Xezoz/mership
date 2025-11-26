@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 
@@ -7,6 +7,8 @@ const WHOP_WEBHOOK_SECRET = process.env.WHOP_WEBHOOK_SECRET;
 export async function POST(request: Request) {
     try {
         const body = await request.text();
+        console.log('Webhook received:', body); // Log the raw body for debugging
+
         const signature = request.headers.get('whop-signature');
 
         // Verify signature if secret is present
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
         }
 
         const event = JSON.parse(body);
-        const supabase = await createClient();
+        const supabase = createAdminClient();
 
         // Handle specific events
         // Note: Adjust event names based on actual Whop webhook documentation
