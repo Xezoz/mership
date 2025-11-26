@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Package } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 const forgotPasswordSchema = z.object({
     email: z.string().email('Invalid email address'),
 })
