@@ -32,7 +32,6 @@ export async function POST(request: Request) {
 
             if (transactionId) {
                 // Update transaction status
-                const { error: updateError } = await supabase
                 // Update transaction status
                 const { error: updateError } = await supabase
                     .from('transactions')
