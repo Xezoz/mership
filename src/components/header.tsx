@@ -3,6 +3,7 @@
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { NotificationsPopover } from '@/components/notifications-popover'
+import { ModeToggle } from '@/components/mode-toggle'
 
 export function Header() {
     return (
@@ -25,6 +26,7 @@ export function Header() {
 
             {/* Notifications */}
             <div className="flex items-center gap-3 flex-1 justify-end">
+                <ModeToggle />
                 <NotificationsPopover />
             </div>
         </header>
