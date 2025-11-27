@@ -7,12 +7,16 @@ const WHOP_API_URL = 'https://api.whop.com/api/v2';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
+        console.log('Verify endpoint called with body:', body);
+
         const { transaction_id } = body;
 
         if (!transaction_id) {
+            console.error('No transaction_id provided');
             return NextResponse.json({ error: 'transaction_id required' }, { status: 400 });
         }
 
+        console.log('Creating admin client...');
         const supabase: any = createAdminClient();
 
         // Check if already completed
@@ -70,6 +74,11 @@ export async function POST(request: Request) {
 
     } catch (error: any) {
         console.error('Verify error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('Error stack:', error.stack);
+        console.error('Error details:', JSON.stringify(error, null, 2));
+        return NextResponse.json({
+            error: error.message || 'Verification failed',
+            details: error.toString()
+        }, { status: 500 });
     }
 }
