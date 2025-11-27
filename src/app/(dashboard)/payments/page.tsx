@@ -27,6 +27,19 @@ export default function PaymentsPage() {
     useEffect(() => {
         fetchBalance()
         fetchTransactions()
+
+        // Check if returning from successful checkout
+        const urlParams = new URLSearchParams(window.location.search)
+        const success = urlParams.get('success')
+        const transactionId = localStorage.getItem('pending_transaction_id')
+
+        if (success === 'true' && transactionId) {
+            // Verify and complete the transaction
+            verifyTransaction(transactionId)
+            localStorage.removeItem('pending_transaction_id')
+            // Clean URL
+            window.history.replaceState({}, '', '/payments')
+        }
     }, [])
 
     const fetchBalance = async () => {
@@ -72,6 +85,28 @@ export default function PaymentsPage() {
             setTransactions(data || [])
         } catch (error) {
             console.error('Error fetching transactions:', error)
+        }
+    }
+
+    const verifyTransaction = async (transactionId: string) => {
+        try {
+            console.log('Verifying transaction:', transactionId)
+            const response = await fetch('/api/whop/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transaction_id: transactionId })
+            })
+
+            const data = await response.json()
+            console.log('Verification result:', data)
+
+            if (data.completed) {
+                alert(`Payment successful! $${data.amount_added || 0} added to your balance.`)
+                fetchBalance()
+                fetchTransactions()
+            }
+        } catch (error) {
+            console.error('Error verifying transaction:', error)
         }
     }
 
@@ -138,6 +173,10 @@ export default function PaymentsPage() {
 
             if (data.url) {
                 console.log('Redirecting to:', data.url)
+                // Store transaction ID for verification when user returns
+                if (data.transaction_id) {
+                    localStorage.setItem('pending_transaction_id', data.transaction_id)
+                }
                 window.location.href = data.url
                 return
             } else {

@@ -61,6 +61,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
             url: checkoutUrl,
+            checkout_session_id: checkout.id,
+            transaction_id: transaction.id,
             ...checkout // Return full object for debugging
         });
 
