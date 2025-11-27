@@ -27,7 +27,10 @@ export async function POST(request: Request) {
                 amount: amount,
                 status: 'pending',
                 payment_method: 'whop',
-                description: `Deposit of $${amount.toFixed(2)} via Card/Whop`
+                description: `Deposit of $${amount.toFixed(2)} via Card/Whop`,
+                metadata: {
+                    checkout_session_id: null // Will be updated after Whop response
+                }
             })
             .select()
             .single();
@@ -58,6 +61,16 @@ export async function POST(request: Request) {
             checkout.data?.checkout_url ||
             checkout.data?.link ||
             checkout.data?.purchase_url;
+
+        // Update transaction with checkout session ID for verification
+        if (checkout.id) {
+            await supabase
+                .from('transactions')
+                .update({
+                    metadata: { checkout_session_id: checkout.id }
+                })
+                .eq('id', transaction.id);
+        }
 
         return NextResponse.json({
             url: checkoutUrl,

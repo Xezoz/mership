@@ -45,6 +45,50 @@ export async function POST(request: Request) {
             });
         }
 
+        // CRITICAL: Verify with Whop API that the checkout was actually completed
+        // Get the checkout session ID from transaction metadata
+        const checkoutSessionId = existingTx.metadata?.checkout_session_id;
+
+        if (!checkoutSessionId) {
+            console.error('No checkout_session_id in transaction metadata');
+            return NextResponse.json({
+                error: 'Cannot verify payment - missing checkout session ID'
+            }, { status: 400 });
+        }
+
+        console.log('Verifying checkout session with Whop:', checkoutSessionId);
+
+        // Verify with Whop API
+        const whopResponse = await fetch(`${WHOP_API_URL}/checkout_sessions/${checkoutSessionId}`, {
+            headers: {
+                'Authorization': `Bearer ${WHOP_API_KEY}`,
+            }
+        });
+
+        if (!whopResponse.ok) {
+            console.error('Whop API error:', await whopResponse.text());
+            return NextResponse.json({
+                error: 'Failed to verify payment with Whop'
+            }, { status: 500 });
+        }
+
+        const checkoutData = await whopResponse.json();
+        console.log('Whop checkout status:', checkoutData.status);
+
+        // Check if payment was actually completed
+        const isCompleted = checkoutData.status === 'completed' || checkoutData.completed === true;
+
+        if (!isCompleted) {
+            console.log('Payment not completed, status:', checkoutData.status);
+            return NextResponse.json({
+                completed: false,
+                status: checkoutData.status,
+                message: 'Payment not completed yet'
+            });
+        }
+
+        console.log('Payment verified as completed, updating balance...');
+
         // Mark as completed and update balance
         await supabase
             .from('transactions')
