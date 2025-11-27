@@ -53,9 +53,11 @@ export async function POST(request: Request) {
             checkout.url ||
             checkout.checkout_url ||
             checkout.link ||
+            checkout.purchase_url || // Found this in the error message!
             checkout.data?.url ||
             checkout.data?.checkout_url ||
-            checkout.data?.link;
+            checkout.data?.link ||
+            checkout.data?.purchase_url;
 
         return NextResponse.json({
             url: checkoutUrl,
