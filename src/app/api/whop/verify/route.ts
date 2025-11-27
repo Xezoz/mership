@@ -99,11 +99,11 @@ export async function POST(request: Request) {
                 const membershipsData = await membershipsResponse.json();
                 console.log('Memberships response:', JSON.stringify(membershipsData, null, 2));
 
-                // Check if there's any active membership for this user and plan
+                // Check if there's any membership with this checkout session
                 hasMembership = membershipsData.data?.some((m: any) =>
-                    m.plan_id === checkoutData.plan_id &&
-                    m.status === 'active' &&
-                    m.metadata?.user_id === existingTx.user_id
+                    m.checkout_session === checkoutSessionId &&
+                    (m.status === 'completed' || m.status === 'active') &&
+                    m.valid === true
                 ) || false;
             }
         } catch (membershipError) {
