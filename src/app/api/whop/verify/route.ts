@@ -83,22 +83,22 @@ export async function POST(request: Request) {
         console.log('Whop checkout full response:', JSON.stringify(checkoutData, null, 2));
         console.log('Whop checkout status:', checkoutData.status);
 
-        // Check if payment was actually completed
-        // For free plans, the checkout might be auto-completed
+        // CRITICAL: Only mark as completed if there's a valid membership or payment confirmation
+        // For Whop, we need to check if a membership was actually created
+        const hasMembership = checkoutData.membership_id || checkoutData.memberships?.length > 0;
         const isCompleted = checkoutData.status === 'completed' ||
-            checkoutData.completed === true ||
             checkoutData.status === 'paid' ||
-            // For free plans, if there's no status field, consider it completed
-            (!checkoutData.status && checkoutData.id);
+            hasMembership;
 
+        console.log('Has membership:', hasMembership);
         console.log('Is completed:', isCompleted);
 
         if (!isCompleted) {
-            console.log('Payment not completed, status:', checkoutData.status);
+            console.log('Payment not completed - no membership found, status:', checkoutData.status);
             return NextResponse.json({
                 completed: false,
                 status: checkoutData.status,
-                message: 'Payment not completed yet'
+                message: 'Payment not completed - no membership created'
             });
         }
 
