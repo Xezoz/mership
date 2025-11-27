@@ -20,15 +20,22 @@ export async function POST(request: Request) {
         const supabase: any = createAdminClient();
 
         // Check if already completed
-        const { data: existingTx } = await supabase
+        const { data: existingTx, error: fetchError } = await supabase
             .from('transactions')
-            .select('status, user_id, amount')
+            .select('status, user_id, amount, metadata')
             .eq('id', transaction_id)
             .single();
+
+        if (fetchError) {
+            console.error('Error fetching transaction:', fetchError);
+            return NextResponse.json({ error: 'Transaction fetch failed' }, { status: 500 });
+        }
 
         if (!existingTx) {
             return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
         }
+
+        console.log('Transaction data:', JSON.stringify(existingTx, null, 2));
 
         if (existingTx.status === 'completed') {
             // Get current balance
