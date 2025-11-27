@@ -21,8 +21,7 @@ export default function PaymentsPage() {
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
     const [transactions, setTransactions] = useState<Transaction[]>([])
-    // Default to 19.99 as requested
-    const [depositAmount, setDepositAmount] = useState('19.99')
+    const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
 
@@ -296,15 +295,42 @@ export default function PaymentsPage() {
                         </CardHeader>
                         <CardContent className="flex-1 flex flex-col justify-between space-y-4">
                             <div className="space-y-3">
-                                <Label>Amount (USD)</Label>
-                                <div className="p-4 border rounded-lg bg-muted/20 text-center">
-                                    <span className="text-3xl font-bold">$19.99</span>
+                                <Label>Select Amount (USD)</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Button
+                                        variant={depositAmount === '10' ? 'default' : 'outline'}
+                                        onClick={() => setDepositAmount('10')}
+                                        className="h-16 text-lg font-semibold"
+                                    >
+                                        $10
+                                    </Button>
+                                    <Button
+                                        variant={depositAmount === '25' ? 'default' : 'outline'}
+                                        onClick={() => setDepositAmount('25')}
+                                        className="h-16 text-lg font-semibold"
+                                    >
+                                        $25
+                                    </Button>
+                                    <Button
+                                        variant={depositAmount === '50' ? 'default' : 'outline'}
+                                        onClick={() => setDepositAmount('50')}
+                                        className="h-16 text-lg font-semibold"
+                                    >
+                                        $50
+                                    </Button>
+                                    <Button
+                                        variant={depositAmount === '100' ? 'default' : 'outline'}
+                                        onClick={() => setDepositAmount('100')}
+                                        className="h-16 text-lg font-semibold"
+                                    >
+                                        $100
+                                    </Button>
                                 </div>
                             </div>
                             <Button
                                 onClick={handleDeposit}
-                                disabled={processing}
-                                className="w-full h-12 text-lg"
+                                disabled={processing || !depositAmount}
+                                className="w-full"
                             >
                                 {processing ? (
                                     <>
@@ -312,7 +338,7 @@ export default function PaymentsPage() {
                                         Processing...
                                     </>
                                 ) : (
-                                    `Pay $19.99`
+                                    `Add $${depositAmount || '0'} to Balance`
                                 )}
                             </Button>
                         </CardContent>

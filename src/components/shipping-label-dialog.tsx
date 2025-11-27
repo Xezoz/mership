@@ -20,7 +20,7 @@ type ShippingLabelDialogProps = {
     onSuccess: () => void
 }
 
-const HANDLING_FEE = 15.00
+const HANDLING_FEE = 19.99
 
 export function ShippingLabelDialog({
     open,

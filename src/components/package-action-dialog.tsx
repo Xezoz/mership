@@ -17,7 +17,7 @@ type PackageActionDialogProps = {
     onSuccess: () => void
 }
 
-const HANDLING_FEE = 15.00 // Default handling fee ($10 to reshipper, $5 platform fee)
+const HANDLING_FEE = 19.99 // Default handling fee ($10 to reshipper, $9.99 platform fee)
 
 export function PackageActionDialog({ shipmentId, trackingNumber, userBalance, onSuccess }: PackageActionDialogProps) {
     const supabase = createBrowserClient()
