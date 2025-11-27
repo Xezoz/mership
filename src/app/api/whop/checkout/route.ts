@@ -64,12 +64,21 @@ export async function POST(request: Request) {
 
         // Update transaction with checkout session ID for verification
         if (checkout.id) {
-            await supabase
+            console.log('Updating transaction with checkout_session_id:', checkout.id);
+            const { error: updateError } = await supabase
                 .from('transactions')
                 .update({
                     metadata: { checkout_session_id: checkout.id }
                 })
                 .eq('id', transaction.id);
+
+            if (updateError) {
+                console.error('Error updating transaction metadata:', updateError);
+            } else {
+                console.log('Successfully updated transaction metadata');
+            }
+        } else {
+            console.error('No checkout.id in Whop response!');
         }
 
         return NextResponse.json({
