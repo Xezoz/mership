@@ -69,9 +69,14 @@ export async function POST(request: Request) {
         console.log('Checkout URL:', checkoutUrl);
 
         // Update transaction with checkout session ID for verification
+        // Use admin client to bypass RLS policies
         if (checkout.id) {
             console.log('Updating transaction', transaction.id, 'with checkout_session_id:', checkout.id);
-            const { error: updateError } = await supabase
+
+            const { createAdminClient } = await import('@/lib/supabase/admin');
+            const adminClient: any = createAdminClient();
+
+            const { error: updateError } = await adminClient
                 .from('transactions')
                 .update({
                     metadata: { checkout_session_id: checkout.id }
@@ -81,7 +86,7 @@ export async function POST(request: Request) {
             if (updateError) {
                 console.error('Error updating transaction metadata:', updateError);
             } else {
-                console.log('Successfully updated transaction metadata');
+                console.log('Successfully updated transaction metadata with admin client');
             }
         } else {
             console.error('No checkout.id in Whop response!');
