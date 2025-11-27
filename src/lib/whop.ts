@@ -15,6 +15,7 @@ export async function createWhopCheckout({
     // Map amounts to plan IDs
     const planMapping: Record<number, string | undefined> = {
         10: process.env.WHOP_PLAN_ID_10,
+        19.99: process.env.WHOP_PLAN_ID_1999, // Added 19.99 plan
         25: process.env.WHOP_PLAN_ID_25,
         50: process.env.WHOP_PLAN_ID_50,
         100: process.env.WHOP_PLAN_ID_100,

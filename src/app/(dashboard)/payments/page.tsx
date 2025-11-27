@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Clock } from 'lucide-react'
 import { Database } from '@/lib/supabase/database.types'
+import { toast } from 'sonner'
 
 type Transaction = Database['public']['Tables']['transactions']['Row']
 
@@ -20,7 +21,8 @@ export default function PaymentsPage() {
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
     const [transactions, setTransactions] = useState<Transaction[]>([])
-    const [depositAmount, setDepositAmount] = useState('')
+    // Default to 19.99 as requested
+    const [depositAmount, setDepositAmount] = useState('19.99')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
 
@@ -47,7 +49,7 @@ export default function PaymentsPage() {
             console.log('Checkout was canceled')
             localStorage.removeItem('pending_transaction_id')
             window.history.replaceState({}, '', '/payments')
-            alert('Checkout was canceled')
+            toast.info('Checkout was canceled')
         } else if (transactionId) {
             // If we have a pending transaction but no success/canceled param,
             // Whop might be redirecting without params. Try to verify anyway.
@@ -118,12 +120,18 @@ export default function PaymentsPage() {
             console.log('Verification result:', data)
 
             if (data.completed) {
-                alert(`Payment successful! $${data.amount_added || 0} added to your balance.`)
+                toast.success(`Payment successful! $${data.amount_added || 0} added to your balance.`)
                 fetchBalance()
                 fetchTransactions()
+            } else if (data.message) {
+                // Only show error toast if it's an explicit failure message, not just "pending"
+                if (data.status === 'failed' || data.status === 'canceled') {
+                    toast.error(`Payment failed: ${data.message}`)
+                }
             }
         } catch (error) {
             console.error('Error verifying transaction:', error)
+            toast.error('Failed to verify transaction')
         }
     }
 
@@ -131,7 +139,7 @@ export default function PaymentsPage() {
         console.log('handleDeposit called with amount:', depositAmount)
         const amount = parseFloat(depositAmount)
         if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid amount')
+            toast.error('Please enter a valid amount')
             return
         }
 
@@ -176,16 +184,15 @@ export default function PaymentsPage() {
                 return
             } else {
                 console.error('No URL in response data:', data)
-                // Alert the keys to help debugging if it fails again
-                alert(`Error: No checkout URL. Response keys: ${Object.keys(data).join(', ')}. Data: ${JSON.stringify(data).substring(0, 100)}...`)
+                toast.error('Failed to get checkout URL from payment provider')
             }
 
-            setDepositAmount('')
+            // setDepositAmount('') // Keep it at 19.99
             fetchBalance()
             fetchTransactions()
         } catch (error) {
             console.error('Error processing deposit:', error)
-            alert('Failed to process deposit: ' + (error instanceof Error ? error.message : String(error)))
+            toast.error('Failed to process deposit: ' + (error instanceof Error ? error.message : String(error)))
         } finally {
             setProcessing(false)
         }
@@ -194,12 +201,12 @@ export default function PaymentsPage() {
     const handleWithdraw = async () => {
         const amount = parseFloat(withdrawAmount)
         if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid amount')
+            toast.error('Please enter a valid amount')
             return
         }
 
         if (amount > balance) {
-            alert('Insufficient balance')
+            toast.error('Insufficient balance')
             return
         }
 
@@ -229,14 +236,14 @@ export default function PaymentsPage() {
 
             if (balanceError) throw balanceError
 
-            alert('Withdrawal request submitted! Funds will be processed within 1-3 business days.')
+            toast.success('Withdrawal request submitted! Funds will be processed within 1-3 business days.')
 
             setWithdrawAmount('')
             fetchBalance()
             fetchTransactions()
         } catch (error) {
             console.error('Error processing withdrawal:', error)
-            alert('Failed to process withdrawal')
+            toast.error('Failed to process withdrawal')
         } finally {
             setProcessing(false)
         }
@@ -289,42 +296,15 @@ export default function PaymentsPage() {
                         </CardHeader>
                         <CardContent className="flex-1 flex flex-col justify-between space-y-4">
                             <div className="space-y-3">
-                                <Label>Select Amount (USD)</Label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Button
-                                        variant={depositAmount === '10' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('10')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $10
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '25' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('25')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $25
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '50' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('50')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $50
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '100' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('100')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $100
-                                    </Button>
+                                <Label>Amount (USD)</Label>
+                                <div className="p-4 border rounded-lg bg-muted/20 text-center">
+                                    <span className="text-3xl font-bold">$19.99</span>
                                 </div>
                             </div>
                             <Button
                                 onClick={handleDeposit}
-                                disabled={processing || !depositAmount}
-                                className="w-full"
+                                disabled={processing}
+                                className="w-full h-12 text-lg"
                             >
                                 {processing ? (
                                     <>
@@ -332,7 +312,7 @@ export default function PaymentsPage() {
                                         Processing...
                                     </>
                                 ) : (
-                                    `Add $${depositAmount || '0'} to Balance`
+                                    `Pay $19.99`
                                 )}
                             </Button>
                         </CardContent>

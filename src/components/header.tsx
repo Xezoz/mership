@@ -9,7 +9,7 @@ export function Header() {
     return (
         <header className="hidden md:flex h-16 items-center justify-between border-b bg-card px-6">
             <div className="flex items-center gap-4 flex-1">
-                <h1 className="text-xl font-semibold">Documents</h1>
+                {/* Title removed as requested */}
             </div>
 
             {/* Search */}
