@@ -143,28 +143,6 @@ export default function PaymentsPage() {
                 return
             }
 
-            console.log('Creating pending transaction...')
-            // Create pending transaction
-            const { error: txError } = await supabase
-                .from('transactions')
-                .insert({
-                    user_id: user.id,
-                    type: 'deposit',
-                    amount: amount,
-                    status: 'pending',
-                    payment_method: 'whop',
-                    description: `Deposit of $${amount.toFixed(2)} via Card/Whop`
-                })
-
-            if (txError) {
-                console.error('Transaction creation error:', txError)
-                if (txError.code === '42P01') {
-                    alert('Please run the database migration first: supabase/add-balance-transactions.sql')
-                    return
-                }
-                throw txError
-            }
-
             console.log('Calling Whop checkout API with amount:', amount)
             // Call Whop checkout API
             const response = await fetch('/api/whop/checkout', {
