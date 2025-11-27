@@ -83,9 +83,33 @@ export async function POST(request: Request) {
         console.log('Whop checkout full response:', JSON.stringify(checkoutData, null, 2));
         console.log('Whop checkout status:', checkoutData.status);
 
-        // CRITICAL: Only mark as completed if there's a valid membership or payment confirmation
-        // For Whop, we need to check if a membership was actually created
-        const hasMembership = checkoutData.membership_id || checkoutData.memberships?.length > 0;
+        // CRITICAL: Whop's checkout session endpoint doesn't include membership info
+        // We need to check if the user actually has a membership for this plan
+        let hasMembership = false;
+
+        // Try to get the user's memberships from Whop
+        try {
+            const membershipsResponse = await fetch(`${WHOP_API_URL}/memberships?plan_id=${checkoutData.plan_id}`, {
+                headers: {
+                    'Authorization': `Bearer ${WHOP_API_KEY}`,
+                }
+            });
+
+            if (membershipsResponse.ok) {
+                const membershipsData = await membershipsResponse.json();
+                console.log('Memberships response:', JSON.stringify(membershipsData, null, 2));
+
+                // Check if there's any active membership for this user and plan
+                hasMembership = membershipsData.data?.some((m: any) =>
+                    m.plan_id === checkoutData.plan_id &&
+                    m.status === 'active' &&
+                    m.metadata?.user_id === existingTx.user_id
+                ) || false;
+            }
+        } catch (membershipError) {
+            console.error('Error checking memberships:', membershipError);
+        }
+
         const isCompleted = checkoutData.status === 'completed' ||
             checkoutData.status === 'paid' ||
             hasMembership;
