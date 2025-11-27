@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown } from 'lucide-react'
+import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown, Clock } from 'lucide-react'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
 
@@ -21,7 +21,7 @@ export default function PaymentsPage() {
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
     const [transactions, setTransactions] = useState<Transaction[]>([])
-    const [stats, setStats] = useState({ totalDeposited: 0, totalSpent: 0 })
+    const [stats, setStats] = useState({ totalDeposited: 0, totalSpent: 0, pendingAmount: 0, lastTransactionDate: null as string | null })
     const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
@@ -89,27 +89,43 @@ export default function PaymentsPage() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
-            // Fetch all completed transactions to calculate totals
+            // Fetch all transactions to calculate totals
             const { data, error } = await supabase
                 .from('transactions')
-                .select('amount, type, status')
+                .select('amount, type, status, created_at')
                 .eq('user_id', user.id)
-                .eq('status', 'completed')
 
             if (error) throw error
 
             let deposited = 0
             let spent = 0
+            let pending = 0
+            let lastDate = null
 
-            data?.forEach(tx => {
-                if (tx.type === 'deposit') {
-                    deposited += tx.amount
-                } else if (tx.type === 'withdrawal') {
-                    spent += tx.amount
-                }
+            if (data && data.length > 0) {
+                // Sort by date to find last activity
+                const sorted = [...data].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                lastDate = sorted[0].created_at
+
+                data.forEach(tx => {
+                    if (tx.status === 'completed') {
+                        if (tx.type === 'deposit') {
+                            deposited += tx.amount
+                        } else if (tx.type === 'withdrawal') {
+                            spent += tx.amount
+                        }
+                    } else if (tx.status === 'pending') {
+                        pending += tx.amount
+                    }
+                })
+            }
+
+            setStats({
+                totalDeposited: deposited,
+                totalSpent: spent,
+                pendingAmount: pending,
+                lastTransactionDate: lastDate
             })
-
-            setStats({ totalDeposited: deposited, totalSpent: spent })
         } catch (error) {
             console.error('Error fetching stats:', error)
         }
@@ -298,20 +314,36 @@ export default function PaymentsPage() {
                             <span className="text-sm text-muted-foreground">USD</span>
                         </div>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-4 p-6">
+                    <CardContent className="grid grid-cols-2 gap-6 p-6">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <TrendingUp className="h-4 w-4" />
                                 Total Deposited
                             </div>
                             <div className="text-2xl font-bold">${stats.totalDeposited.toFixed(2)}</div>
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <TrendingDown className="h-4 w-4 text-red-500" />
+                                <TrendingDown className="h-4 w-4" />
                                 Total Spent
                             </div>
                             <div className="text-2xl font-bold">${stats.totalSpent.toFixed(2)}</div>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                Pending
+                            </div>
+                            <div className="text-2xl font-bold">${stats.pendingAmount.toFixed(2)}</div>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <ArrowUpRight className="h-4 w-4" />
+                                Last Activity
+                            </div>
+                            <div className="text-lg font-medium truncate">
+                                {stats.lastTransactionDate ? new Date(stats.lastTransactionDate).toLocaleDateString() : 'N/A'}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
