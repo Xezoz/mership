@@ -48,8 +48,14 @@ export async function POST(request: Request) {
         });
 
         // The checkout URL is usually in the response, but Whop structure might vary.
-        // Based on docs/previous code:
-        const checkoutUrl = checkout.url || checkout.checkout_url || checkout.link;
+        // It is likely wrapped in a 'data' property.
+        const checkoutUrl =
+            checkout.url ||
+            checkout.checkout_url ||
+            checkout.link ||
+            checkout.data?.url ||
+            checkout.data?.checkout_url ||
+            checkout.data?.link;
 
         return NextResponse.json({
             url: checkoutUrl,

@@ -142,7 +142,8 @@ export default function PaymentsPage() {
                 return
             } else {
                 console.error('No URL in response data:', data)
-                alert('Error: No checkout URL received from payment provider.')
+                // Alert the keys to help debugging if it fails again
+                alert(`Error: No checkout URL. Response keys: ${Object.keys(data).join(', ')}. Data: ${JSON.stringify(data).substring(0, 100)}...`)
             }
 
             setDepositAmount('')
