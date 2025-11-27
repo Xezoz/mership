@@ -87,6 +87,19 @@ export async function POST(request: Request) {
                 console.error('Error updating transaction metadata:', updateError);
             } else {
                 console.log('Successfully updated transaction metadata with admin client');
+
+                // Verify the update worked by querying the transaction
+                const { data: verifyData, error: verifyError } = await adminClient
+                    .from('transactions')
+                    .select('id, metadata')
+                    .eq('id', transaction.id)
+                    .single();
+
+                if (verifyError) {
+                    console.error('Error verifying transaction update:', verifyError);
+                } else {
+                    console.log('Verification query result:', JSON.stringify(verifyData, null, 2));
+                }
             }
         } else {
             console.error('No checkout.id in Whop response!');
