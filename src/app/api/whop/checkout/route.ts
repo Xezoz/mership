@@ -41,6 +41,7 @@ export async function POST(request: Request) {
         }
 
         // Create Whop checkout session
+        console.log('Creating Whop checkout for amount:', amount);
         const checkout = await createWhopCheckout({
             amount,
             redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/payments`,
@@ -49,6 +50,9 @@ export async function POST(request: Request) {
                 transaction_id: transaction.id
             }
         });
+
+        console.log('Whop checkout response:', JSON.stringify(checkout, null, 2));
+        console.log('Checkout ID:', checkout.id);
 
         // The checkout URL is usually in the response, but Whop structure might vary.
         // It is likely wrapped in a 'data' property.
@@ -62,9 +66,11 @@ export async function POST(request: Request) {
             checkout.data?.link ||
             checkout.data?.purchase_url;
 
+        console.log('Checkout URL:', checkoutUrl);
+
         // Update transaction with checkout session ID for verification
         if (checkout.id) {
-            console.log('Updating transaction with checkout_session_id:', checkout.id);
+            console.log('Updating transaction', transaction.id, 'with checkout_session_id:', checkout.id);
             const { error: updateError } = await supabase
                 .from('transactions')
                 .update({
