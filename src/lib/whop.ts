@@ -40,9 +40,7 @@ export async function createWhopCheckout({
                 type: 'deposit',
                 amount: amount.toString(),
                 ...metadata
-            },
-            success_url: `${redirectUrl}?success=true`,
-            cancel_url: `${redirectUrl}?canceled=true`
+            }
         })
     });
 
