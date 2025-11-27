@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         // Cast to any to bypass strict type checking for now
         const supabase: any = createAdminClient();
 
-        if (event.type === 'payment.succeeded' || event.type === 'checkout.completed') {
+        if (event.type === 'payment.succeeded' || event.type === 'checkout.completed' || event.type === 'membership.went_active') {
             const { metadata } = event.data;
             console.log('Webhook Metadata:', metadata);
             const transactionId = metadata?.transaction_id;
