@@ -49,9 +49,12 @@ export async function POST(request: Request) {
 
         // The checkout URL is usually in the response, but Whop structure might vary.
         // Based on docs/previous code:
-        const checkoutUrl = checkout.url || checkout.checkout_url;
+        const checkoutUrl = checkout.url || checkout.checkout_url || checkout.link;
 
-        return NextResponse.json({ url: checkoutUrl });
+        return NextResponse.json({
+            url: checkoutUrl,
+            ...checkout // Return full object for debugging
+        });
 
     } catch (error: any) {
         console.error('Whop checkout error:', error);
