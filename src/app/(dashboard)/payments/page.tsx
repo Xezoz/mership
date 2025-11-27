@@ -31,14 +31,31 @@ export default function PaymentsPage() {
         // Check if returning from successful checkout
         const urlParams = new URLSearchParams(window.location.search)
         const success = urlParams.get('success')
+        const canceled = urlParams.get('canceled')
         const transactionId = localStorage.getItem('pending_transaction_id')
+
+        console.log('URL params:', { success, canceled, transactionId })
 
         if (success === 'true' && transactionId) {
             // Verify and complete the transaction
+            console.log('Verifying transaction after successful checkout')
             verifyTransaction(transactionId)
             localStorage.removeItem('pending_transaction_id')
             // Clean URL
             window.history.replaceState({}, '', '/payments')
+        } else if (canceled === 'true' && transactionId) {
+            console.log('Checkout was canceled')
+            localStorage.removeItem('pending_transaction_id')
+            window.history.replaceState({}, '', '/payments')
+            alert('Checkout was canceled')
+        } else if (transactionId) {
+            // If we have a pending transaction but no success/canceled param,
+            // Whop might be redirecting without params. Try to verify anyway.
+            console.log('Found pending transaction, attempting verification')
+            setTimeout(() => {
+                verifyTransaction(transactionId)
+                localStorage.removeItem('pending_transaction_id')
+            }, 1000)
         }
     }, [])
 
