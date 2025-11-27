@@ -1,37 +1,29 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 const WHOP_WEBHOOK_SECRET = process.env.WHOP_WEBHOOK_SECRET;
 
 export async function POST(request: Request) {
     try {
         const body = await request.text();
-        console.log('Webhook received:', body); // Log the raw body for debugging
+        console.log('Webhook received:', body);
 
         const signature = request.headers.get('whop-signature');
 
-        // Verify signature if secret is present
+        // Verify signature (optional for now, but recommended)
         if (WHOP_WEBHOOK_SECRET && signature) {
-            // Whop signature verification logic (simplified)
-            // Usually HMAC-SHA256 of the body
-            // const expectedSignature = crypto.createHmac('sha256', WHOP_WEBHOOK_SECRET).update(body).digest('hex');
-            // if (signature !== expectedSignature) {
-            //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-            // }
+            // Verification logic here
         }
 
         const event = JSON.parse(body);
+        // Cast to any to bypass strict type checking for now
         const supabase: any = createAdminClient();
 
-        // Handle specific events
-        // Note: Adjust event names based on actual Whop webhook documentation
         if (event.type === 'payment.succeeded' || event.type === 'checkout.completed') {
-            const { metadata, amount_total } = event.data;
+            const { metadata } = event.data;
             const transactionId = metadata?.transaction_id;
 
             if (transactionId) {
-                // Update transaction status
                 // Update transaction status
                 const { error: updateError } = await supabase
                     .from('transactions')
@@ -44,7 +36,6 @@ export async function POST(request: Request) {
                 }
 
                 // Update user balance
-                // We need to get the user_id from the transaction first to be safe
                 const { data: transaction } = await supabase
                     .from('transactions')
                     .select('user_id, amount')
@@ -52,7 +43,6 @@ export async function POST(request: Request) {
                     .single();
 
                 if (transaction) {
-                    // Fetch current balance
                     const { data: profile } = await supabase
                         .from('profiles')
                         .select('balance')
