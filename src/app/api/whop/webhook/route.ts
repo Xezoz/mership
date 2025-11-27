@@ -16,11 +16,14 @@ export async function POST(request: Request) {
         }
 
         const event = JSON.parse(body);
+        console.log('Whop Webhook Event Type:', event.type);
+
         // Cast to any to bypass strict type checking for now
         const supabase: any = createAdminClient();
 
         if (event.type === 'payment.succeeded' || event.type === 'checkout.completed') {
             const { metadata } = event.data;
+            console.log('Webhook Metadata:', metadata);
             const transactionId = metadata?.transaction_id;
 
             if (transactionId) {
