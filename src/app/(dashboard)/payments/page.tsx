@@ -113,7 +113,7 @@ export default function PaymentsPage() {
                 throw txError
             }
 
-            console.log('Calling Whop checkout API...')
+            console.log('Calling Whop checkout API with amount:', amount)
             // Call Whop checkout API
             const response = await fetch('/api/whop/checkout', {
                 method: 'POST',
@@ -122,11 +122,18 @@ export default function PaymentsPage() {
             })
 
             console.log('Whop API response status:', response.status)
-            const data = await response.json()
-            console.log('Whop API response data:', data)
+
+            let data;
+            try {
+                data = await response.json()
+                console.log('Whop API response data:', data)
+            } catch (jsonError) {
+                console.error('Error parsing JSON response:', jsonError)
+                throw new Error('Invalid response from server')
+            }
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to initiate Whop checkout')
+                throw new Error(data.error || `Failed to initiate Whop checkout: ${response.statusText}`)
             }
 
             if (data.url) {
@@ -134,7 +141,8 @@ export default function PaymentsPage() {
                 window.location.href = data.url
                 return
             } else {
-                console.error('No URL in response data')
+                console.error('No URL in response data:', data)
+                alert('Error: No checkout URL received from payment provider.')
             }
 
             setDepositAmount('')
