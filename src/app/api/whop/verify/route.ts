@@ -80,10 +80,18 @@ export async function POST(request: Request) {
         }
 
         const checkoutData = await whopResponse.json();
+        console.log('Whop checkout full response:', JSON.stringify(checkoutData, null, 2));
         console.log('Whop checkout status:', checkoutData.status);
 
         // Check if payment was actually completed
-        const isCompleted = checkoutData.status === 'completed' || checkoutData.completed === true;
+        // For free plans, the checkout might be auto-completed
+        const isCompleted = checkoutData.status === 'completed' ||
+            checkoutData.completed === true ||
+            checkoutData.status === 'paid' ||
+            // For free plans, if there's no status field, consider it completed
+            (!checkoutData.status && checkoutData.id);
+
+        console.log('Is completed:', isCompleted);
 
         if (!isCompleted) {
             console.log('Payment not completed, status:', checkoutData.status);
