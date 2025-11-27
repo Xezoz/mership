@@ -25,6 +25,17 @@ export default function PaymentsPage() {
     const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
+    const [withdrawalStep, setWithdrawalStep] = useState(1)
+    const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'ach' | 'bank' | null>(null)
+    const [paymentDetails, setPaymentDetails] = useState({
+        cryptoAddress: '',
+        cryptoNetwork: '',
+        accountName: '',
+        routingNumber: '',
+        accountNumber: '',
+        bankName: '',
+        swiftCode: ''
+    })
 
     useEffect(() => {
         fetchData()
@@ -230,6 +241,8 @@ export default function PaymentsPage() {
         }
     }
 
+
+
     const handleWithdraw = async () => {
         const amount = parseFloat(withdrawAmount)
         if (isNaN(amount) || amount <= 0) {
@@ -242,11 +255,40 @@ export default function PaymentsPage() {
             return
         }
 
+        // Validation based on payment method
+        if (paymentMethod === 'crypto') {
+            if (!paymentDetails.cryptoAddress || !paymentDetails.cryptoNetwork) {
+                toast.error('Please fill in all crypto details')
+                return
+            }
+        } else if (paymentMethod === 'ach') {
+            if (!paymentDetails.accountName || !paymentDetails.routingNumber || !paymentDetails.accountNumber) {
+                toast.error('Please fill in all ACH details')
+                return
+            }
+        } else if (paymentMethod === 'bank') {
+            if (!paymentDetails.accountName || !paymentDetails.bankName || !paymentDetails.swiftCode || !paymentDetails.accountNumber) {
+                toast.error('Please fill in all bank details')
+                return
+            }
+        }
+
         setProcessing(true)
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
+            // Construct description with payment details
+            let description = `Withdrawal of $${amount.toFixed(2)} via ${paymentMethod?.toUpperCase()}`
+            if (paymentMethod === 'crypto') {
+                description += ` (${paymentDetails.cryptoNetwork}: ${paymentDetails.cryptoAddress})`
+            } else if (paymentMethod === 'ach') {
+                description += ` (ACH: ${paymentDetails.accountName}, ****${paymentDetails.accountNumber.slice(-4)})`
+            } else if (paymentMethod === 'bank') {
+                description += ` (Bank: ${paymentDetails.bankName}, SWIFT: ${paymentDetails.swiftCode})`
+            }
+
+            // Create withdrawal transaction
             const { error: txError } = await supabase
                 .from('transactions')
                 .insert({
@@ -254,11 +296,12 @@ export default function PaymentsPage() {
                     type: 'withdrawal',
                     amount: amount,
                     status: 'pending',
-                    description: `Withdrawal of $${amount.toFixed(2)}`
+                    description: description
                 })
 
             if (txError) throw txError
 
+            // Update balance
             const { error: balanceError } = await supabase
                 .from('profiles')
                 .update({ balance: balance - amount })
@@ -269,6 +312,17 @@ export default function PaymentsPage() {
             toast.success('Withdrawal request submitted! Funds will be processed within 1-3 business days.')
 
             setWithdrawAmount('')
+            setWithdrawalStep(1)
+            setPaymentMethod(null)
+            setPaymentDetails({
+                cryptoAddress: '',
+                cryptoNetwork: '',
+                accountName: '',
+                routingNumber: '',
+                accountNumber: '',
+                bankName: '',
+                swiftCode: ''
+            })
             fetchData()
         } catch (error) {
             console.error('Error processing withdrawal:', error)
@@ -419,31 +473,184 @@ export default function PaymentsPage() {
                             <CardDescription>Transfer money to your bank account</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="withdraw_amount">Amount (USD)</Label>
-                                <Input
-                                    id="withdraw_amount"
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    max={balance}
-                                    value={withdrawAmount}
-                                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                                    placeholder="0.00"
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                    Available: ${balance.toFixed(2)}
-                                </p>
-                            </div>
-                            <Button
-                                onClick={handleWithdraw}
-                                disabled={processing || !withdrawAmount || parseFloat(withdrawAmount) > balance}
-                                className="w-full"
-                                variant="outline"
-                            >
-                                {processing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                                Request Withdrawal
-                            </Button>
+                            {withdrawalStep === 1 && (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="withdraw_amount">Amount (USD)</Label>
+                                        <Input
+                                            id="withdraw_amount"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            max={balance}
+                                            value={withdrawAmount}
+                                            onChange={(e) => setWithdrawAmount(e.target.value)}
+                                            placeholder="0.00"
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Available: ${balance.toFixed(2)}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        onClick={() => {
+                                            const amount = parseFloat(withdrawAmount)
+                                            if (isNaN(amount) || amount <= 0) {
+                                                toast.error('Please enter a valid amount')
+                                                return
+                                            }
+                                            if (amount > balance) {
+                                                toast.error('Insufficient balance')
+                                                return
+                                            }
+                                            setWithdrawalStep(2)
+                                        }}
+                                        className="w-full"
+                                    >
+                                        Next: Select Payment Method
+                                    </Button>
+                                </div>
+                            )}
+
+                            {withdrawalStep === 2 && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <Button
+                                            variant={paymentMethod === 'crypto' ? 'default' : 'outline'}
+                                            onClick={() => setPaymentMethod('crypto')}
+                                            className="justify-start h-auto py-4"
+                                        >
+                                            <div className="flex flex-col items-start gap-1">
+                                                <span className="font-semibold">Crypto (USDT/USDC)</span>
+                                                <span className="text-xs text-muted-foreground">Fastest transfer, low fees</span>
+                                            </div>
+                                        </Button>
+                                        <Button
+                                            variant={paymentMethod === 'ach' ? 'default' : 'outline'}
+                                            onClick={() => setPaymentMethod('ach')}
+                                            className="justify-start h-auto py-4"
+                                        >
+                                            <div className="flex flex-col items-start gap-1">
+                                                <span className="font-semibold">ACH Transfer</span>
+                                                <span className="text-xs text-muted-foreground">1-3 business days</span>
+                                            </div>
+                                        </Button>
+                                        <Button
+                                            variant={paymentMethod === 'bank' ? 'default' : 'outline'}
+                                            onClick={() => setPaymentMethod('bank')}
+                                            className="justify-start h-auto py-4"
+                                        >
+                                            <div className="flex flex-col items-start gap-1">
+                                                <span className="font-semibold">Bank Wire</span>
+                                                <span className="text-xs text-muted-foreground">International transfers available</span>
+                                            </div>
+                                        </Button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="ghost" onClick={() => setWithdrawalStep(1)} className="w-full">
+                                            Back
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                if (!paymentMethod) {
+                                                    toast.error('Please select a payment method')
+                                                    return
+                                                }
+                                                setWithdrawalStep(3)
+                                            }}
+                                            className="w-full"
+                                        >
+                                            Next: Enter Details
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {withdrawalStep === 3 && (
+                                <div className="space-y-4">
+                                    {paymentMethod === 'crypto' && (
+                                        <div className="space-y-2">
+                                            <Label>Wallet Address (USDT/USDC - TRC20/ERC20)</Label>
+                                            <Input
+                                                placeholder="Enter your wallet address"
+                                                value={paymentDetails.cryptoAddress}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cryptoAddress: e.target.value })}
+                                            />
+                                            <Label>Network</Label>
+                                            <Input
+                                                placeholder="e.g. TRC20, ERC20, SOL"
+                                                value={paymentDetails.cryptoNetwork}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cryptoNetwork: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {paymentMethod === 'ach' && (
+                                        <div className="space-y-2">
+                                            <Label>Account Holder Name</Label>
+                                            <Input
+                                                placeholder="Full Name"
+                                                value={paymentDetails.accountName}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, accountName: e.target.value })}
+                                            />
+                                            <Label>Routing Number</Label>
+                                            <Input
+                                                placeholder="9 digits"
+                                                value={paymentDetails.routingNumber}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, routingNumber: e.target.value })}
+                                            />
+                                            <Label>Account Number</Label>
+                                            <Input
+                                                placeholder="Account Number"
+                                                value={paymentDetails.accountNumber}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {paymentMethod === 'bank' && (
+                                        <div className="space-y-2">
+                                            <Label>Beneficiary Name</Label>
+                                            <Input
+                                                placeholder="Full Name"
+                                                value={paymentDetails.accountName}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, accountName: e.target.value })}
+                                            />
+                                            <Label>Bank Name</Label>
+                                            <Input
+                                                placeholder="Bank Name"
+                                                value={paymentDetails.bankName}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, bankName: e.target.value })}
+                                            />
+                                            <Label>SWIFT/BIC Code</Label>
+                                            <Input
+                                                placeholder="SWIFT Code"
+                                                value={paymentDetails.swiftCode}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, swiftCode: e.target.value })}
+                                            />
+                                            <Label>IBAN / Account Number</Label>
+                                            <Input
+                                                placeholder="IBAN or Account Number"
+                                                value={paymentDetails.accountNumber}
+                                                onChange={(e) => setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-2">
+                                        <Button variant="ghost" onClick={() => setWithdrawalStep(2)} className="w-full">
+                                            Back
+                                        </Button>
+                                        <Button
+                                            onClick={handleWithdraw}
+                                            disabled={processing}
+                                            className="w-full"
+                                        >
+                                            {processing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                            Submit Withdrawal
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}
