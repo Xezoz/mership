@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown, Clock } from 'lucide-react'
+import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown, Activity } from 'lucide-react'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
 
@@ -21,7 +21,7 @@ export default function PaymentsPage() {
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
     const [transactions, setTransactions] = useState<Transaction[]>([])
-    const [stats, setStats] = useState({ totalDeposited: 0, totalSpent: 0, pendingAmount: 0, lastTransactionDate: null as string | null })
+    const [stats, setStats] = useState({ totalDeposited: 0, totalSpent: 0, transactionCount: 0, lastTransactionDate: null as string | null })
     const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
@@ -99,7 +99,6 @@ export default function PaymentsPage() {
 
             let deposited = 0
             let spent = 0
-            let pending = 0
             let lastDate = null
 
             if (data && data.length > 0) {
@@ -114,8 +113,6 @@ export default function PaymentsPage() {
                         } else if (tx.type === 'withdrawal') {
                             spent += tx.amount
                         }
-                    } else if (tx.status === 'pending') {
-                        pending += tx.amount
                     }
                 })
             }
@@ -123,7 +120,7 @@ export default function PaymentsPage() {
             setStats({
                 totalDeposited: deposited,
                 totalSpent: spent,
-                pendingAmount: pending,
+                transactionCount: data?.length || 0,
                 lastTransactionDate: lastDate
             })
         } catch (error) {
@@ -331,10 +328,10 @@ export default function PaymentsPage() {
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Clock className="h-4 w-4" />
-                                Pending
+                                <Activity className="h-4 w-4" />
+                                Total Transactions
                             </div>
-                            <div className="text-2xl font-bold">${stats.pendingAmount.toFixed(2)}</div>
+                            <div className="text-2xl font-bold">{stats.transactionCount}</div>
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
