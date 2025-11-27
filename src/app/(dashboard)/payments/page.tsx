@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Clock } from 'lucide-react'
+import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown } from 'lucide-react'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
 
@@ -21,13 +21,13 @@ export default function PaymentsPage() {
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
     const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [stats, setStats] = useState({ totalDeposited: 0, totalSpent: 0 })
     const [depositAmount, setDepositAmount] = useState('')
     const [withdrawAmount, setWithdrawAmount] = useState('')
     const [processing, setProcessing] = useState(false)
 
     useEffect(() => {
-        fetchBalance()
-        fetchTransactions()
+        fetchData()
 
         // Check if returning from successful checkout
         const urlParams = new URLSearchParams(window.location.search)
@@ -60,6 +60,12 @@ export default function PaymentsPage() {
         }
     }, [])
 
+    const fetchData = async () => {
+        setLoading(true)
+        await Promise.all([fetchBalance(), fetchTransactions(), fetchStats()])
+        setLoading(false)
+    }
+
     const fetchBalance = async () => {
         try {
             const { data: { user } } = await supabase.auth.getUser()
@@ -75,8 +81,37 @@ export default function PaymentsPage() {
             setBalance(data?.balance || 0)
         } catch (error) {
             console.error('Error fetching balance:', error)
-        } finally {
-            setLoading(false)
+        }
+    }
+
+    const fetchStats = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
+
+            // Fetch all completed transactions to calculate totals
+            const { data, error } = await supabase
+                .from('transactions')
+                .select('amount, type, status')
+                .eq('user_id', user.id)
+                .eq('status', 'completed')
+
+            if (error) throw error
+
+            let deposited = 0
+            let spent = 0
+
+            data?.forEach(tx => {
+                if (tx.type === 'deposit') {
+                    deposited += tx.amount
+                } else if (tx.type === 'withdrawal') {
+                    spent += tx.amount
+                }
+            })
+
+            setStats({ totalDeposited: deposited, totalSpent: spent })
+        } catch (error) {
+            console.error('Error fetching stats:', error)
         }
     }
 
@@ -93,11 +128,7 @@ export default function PaymentsPage() {
                 .limit(10)
 
             if (error) {
-                // If table doesn't exist yet, just return empty array
-                if (error.code === '42P01') {
-                    console.log('Transactions table not created yet. Please run the SQL migration.')
-                    return
-                }
+                if (error.code === '42P01') return
                 throw error
             }
             setTransactions(data || [])
@@ -120,10 +151,8 @@ export default function PaymentsPage() {
 
             if (data.completed) {
                 toast.success(`Payment successful! $${data.amount_added || 0} added to your balance.`)
-                fetchBalance()
-                fetchTransactions()
+                fetchData() // Refresh everything
             } else if (data.message) {
-                // Only show error toast if it's an explicit failure message, not just "pending"
                 if (data.status === 'failed' || data.status === 'canceled') {
                     toast.error(`Payment failed: ${data.message}`)
                 }
@@ -151,19 +180,15 @@ export default function PaymentsPage() {
             }
 
             console.log('Calling Whop checkout API with amount:', amount)
-            // Call Whop checkout API
             const response = await fetch('/api/whop/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount })
             })
 
-            console.log('Whop API response status:', response.status)
-
             let data;
             try {
                 data = await response.json()
-                console.log('Whop API response data:', data)
             } catch (jsonError) {
                 console.error('Error parsing JSON response:', jsonError)
                 throw new Error('Invalid response from server')
@@ -174,21 +199,16 @@ export default function PaymentsPage() {
             }
 
             if (data.url) {
-                console.log('Redirecting to:', data.url)
-                // Store transaction ID for verification when user returns
                 if (data.transaction_id) {
                     localStorage.setItem('pending_transaction_id', data.transaction_id)
                 }
                 window.location.href = data.url
                 return
             } else {
-                console.error('No URL in response data:', data)
                 toast.error('Failed to get checkout URL from payment provider')
             }
 
-            // setDepositAmount('') // Keep it at 19.99
-            fetchBalance()
-            fetchTransactions()
+            fetchData()
         } catch (error) {
             console.error('Error processing deposit:', error)
             toast.error('Failed to process deposit: ' + (error instanceof Error ? error.message : String(error)))
@@ -214,7 +234,6 @@ export default function PaymentsPage() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) return
 
-            // Create withdrawal transaction
             const { error: txError } = await supabase
                 .from('transactions')
                 .insert({
@@ -227,7 +246,6 @@ export default function PaymentsPage() {
 
             if (txError) throw txError
 
-            // Update balance
             const { error: balanceError } = await supabase
                 .from('profiles')
                 .update({ balance: balance - amount })
@@ -238,8 +256,7 @@ export default function PaymentsPage() {
             toast.success('Withdrawal request submitted! Funds will be processed within 1-3 business days.')
 
             setWithdrawAmount('')
-            fetchBalance()
-            fetchTransactions()
+            fetchData()
         } catch (error) {
             console.error('Error processing withdrawal:', error)
             toast.error('Failed to process withdrawal')
@@ -249,7 +266,6 @@ export default function PaymentsPage() {
     }
 
     const getStatusColor = (status: string) => {
-        // Monochrome only - no colors
         return 'bg-muted text-foreground'
     }
 
@@ -269,17 +285,34 @@ export default function PaymentsPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                {/* Balance Card */}
-                <Card>
-                    <CardHeader>
+                {/* Enhanced Balance Card */}
+                <Card className="overflow-hidden">
+                    <CardHeader className="border-b bg-muted/40 pb-8">
                         <CardTitle className="flex items-center gap-2">
-                            <DollarSign className="h-5 w-5" />
+                            <Wallet className="h-5 w-5" />
                             Account Balance
                         </CardTitle>
-                        <CardDescription>Your current available balance</CardDescription>
+                        <CardDescription>Your current available funds</CardDescription>
+                        <div className="mt-4 flex items-baseline gap-2">
+                            <span className="text-4xl font-bold">${balance.toFixed(2)}</span>
+                            <span className="text-sm text-muted-foreground">USD</span>
+                        </div>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-4xl font-bold">${balance.toFixed(2)}</div>
+                    <CardContent className="grid grid-cols-2 gap-4 p-6">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                Total Deposited
+                            </div>
+                            <div className="text-2xl font-bold">${stats.totalDeposited.toFixed(2)}</div>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <TrendingDown className="h-4 w-4 text-red-500" />
+                                Total Spent
+                            </div>
+                            <div className="text-2xl font-bold">${stats.totalSpent.toFixed(2)}</div>
+                        </div>
                     </CardContent>
                 </Card>
 
