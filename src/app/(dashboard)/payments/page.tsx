@@ -100,8 +100,8 @@ export default function PaymentsPage() {
                     type: 'deposit',
                     amount: amount,
                     status: 'pending',
-                    payment_method: 'whop',
-                    description: `Deposit of $${amount.toFixed(2)} via Card/Whop`
+                    payment_method: 'coinbase',
+                    description: `Deposit of $${amount.toFixed(2)} via Coinbase`
                 })
 
             if (txError) {
@@ -113,20 +113,20 @@ export default function PaymentsPage() {
                 throw txError
             }
 
-            console.log('Calling Whop checkout API...')
-            // Call Whop checkout API
-            const response = await fetch('/api/whop/checkout', {
+            console.log('Calling Coinbase checkout API...')
+            // Call Coinbase checkout API
+            const response = await fetch('/api/coinbase/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount })
             })
 
-            console.log('Whop API response status:', response.status)
+            console.log('Coinbase API response status:', response.status)
             const data = await response.json()
-            console.log('Whop API response data:', data)
+            console.log('Coinbase API response data:', data)
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to initiate Whop checkout')
+                throw new Error(data.error || 'Failed to initiate Coinbase checkout')
             }
 
             if (data.url) {
@@ -242,45 +242,41 @@ export default function PaymentsPage() {
                                 <ArrowDownLeft className="h-5 w-5" />
                                 Deposit Funds
                             </CardTitle>
-                            <CardDescription>Add money via Card, Apple Pay, or Google Pay (Whop)</CardDescription>
+                            <CardDescription>Add money via Crypto (Coinbase)</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1 flex flex-col justify-between space-y-4">
                             <div className="space-y-3">
-                                <Label>Select Amount (USD)</Label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Button
-                                        variant={depositAmount === '10' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('10')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $10
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '25' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('25')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $25
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '50' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('50')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $50
-                                    </Button>
-                                    <Button
-                                        variant={depositAmount === '100' ? 'default' : 'outline'}
-                                        onClick={() => setDepositAmount('100')}
-                                        className="h-16 text-lg font-semibold"
-                                    >
-                                        $100
-                                    </Button>
+                                <Label htmlFor="deposit_amount">Enter Amount (USD)</Label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                                    <Input
+                                        id="deposit_amount"
+                                        type="number"
+                                        step="0.01"
+                                        min="1"
+                                        placeholder="0.00"
+                                        value={depositAmount}
+                                        onChange={(e) => setDepositAmount(e.target.value)}
+                                        className="pl-7 text-lg"
+                                    />
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {['10', '25', '50', '100', '500'].map((amt) => (
+                                        <Button
+                                            key={amt}
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setDepositAmount(amt)}
+                                            className={depositAmount === amt ? 'bg-primary text-primary-foreground' : ''}
+                                        >
+                                            ${amt}
+                                        </Button>
+                                    ))}
                                 </div>
                             </div>
                             <Button
                                 onClick={handleDeposit}
-                                disabled={processing || !depositAmount}
+                                disabled={processing || !depositAmount || parseFloat(depositAmount) <= 0}
                                 className="w-full"
                             >
                                 {processing ? (
@@ -289,7 +285,7 @@ export default function PaymentsPage() {
                                         Processing...
                                     </>
                                 ) : (
-                                    `Add $${depositAmount || '0'} to Balance`
+                                    `Pay with Crypto ($${depositAmount || '0'})`
                                 )}
                             </Button>
                         </CardContent>
