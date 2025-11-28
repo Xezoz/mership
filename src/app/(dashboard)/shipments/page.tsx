@@ -67,6 +67,14 @@ export default function ShipmentsPage() {
 
             const { data: shipmentsData, error: shipmentsError } = await query
 
+            console.log('Shipments Query Debug:', {
+                user_id: user.id,
+                isModerator,
+                dataLength: shipmentsData?.length,
+                error: shipmentsError,
+                query: isModerator ? 'all' : 'filtered'
+            })
+
             if (shipmentsError) {
                 console.error('Error fetching shipments:', shipmentsError)
                 toast.error('Failed to load shipments')
