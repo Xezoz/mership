@@ -63,6 +63,12 @@ export function ModeratorDashboard() {
 
             if (reshippersError) throw reshippersError
 
+            console.log('Moderator Dashboard Data:', {
+                totalRevenue,
+                withdrawalsCount: withdrawalsData?.length,
+                reshippersCount
+            })
+
             setStats({
                 totalRevenue,
                 pendingWithdrawalsCount: withdrawalsData?.length || 0,

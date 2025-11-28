@@ -16,7 +16,7 @@ type Transaction = Database['public']['Tables']['transactions']['Row']
 
 export default function PaymentsPage() {
     const supabase = createBrowserClient()
-    const { isReshipper, isCustomer } = useUserRole()
+    const { isReshipper, isCustomer, isModerator } = useUserRole()
 
     const [loading, setLoading] = useState(true)
     const [balance, setBalance] = useState(0)
@@ -456,6 +456,47 @@ export default function PaymentsPage() {
                                 ) : (
                                     `Add $${depositAmount || '0'} to Balance`
                                 )}
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Moderator Actions Card */}
+                {isModerator && (
+                    <Card className="flex flex-col h-full min-h-0">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Wallet className="h-5 w-5" />
+                                Moderator Actions
+                            </CardTitle>
+                            <CardDescription>Manage user balances and payouts</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 flex flex-col gap-4">
+                            <Button
+                                variant="outline"
+                                className="w-full justify-start h-auto py-4"
+                                onClick={() => toast.info('Send Balance feature coming soon')}
+                            >
+                                <div className="flex flex-col items-start gap-1">
+                                    <span className="font-semibold flex items-center gap-2">
+                                        <ArrowUpRight className="h-4 w-4" />
+                                        Send Balance
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">Credit a user's account</span>
+                                </div>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full justify-start h-auto py-4"
+                                onClick={() => toast.info('Payout feature coming soon')}
+                            >
+                                <div className="flex flex-col items-start gap-1">
+                                    <span className="font-semibold flex items-center gap-2">
+                                        <ArrowDownLeft className="h-4 w-4" />
+                                        Process Payout
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">Send funds to reshippers</span>
+                                </div>
                             </Button>
                         </CardContent>
                     </Card>

@@ -43,7 +43,7 @@ export default function ShipmentsPage() {
     const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
     const [selectedShipment, setSelectedShipment] = useState<{ id: string; trackingNumber: string } | null>(null)
     const supabase = createBrowserClient()
-    const { isReshipper, isCustomer } = useUserRole()
+    const { isReshipper, isCustomer, isModerator } = useUserRole()
 
     const fetchShipments = async () => {
         setLoading(true)
@@ -55,11 +55,17 @@ export default function ShipmentsPage() {
             }
 
             // Fetch shipments - simplified query without joins
-            const { data: shipmentsData, error: shipmentsError } = await supabase
+            let query = supabase
                 .from('shipments')
                 .select('*')
-                .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
                 .order('created_at', { ascending: false })
+
+            // Apply filters based on role
+            if (!isModerator) {
+                query = query.or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+            }
+
+            const { data: shipmentsData, error: shipmentsError } = await query
 
             if (shipmentsError) {
                 console.error('Shipments error:', shipmentsError)
@@ -364,10 +370,11 @@ export default function ShipmentsPage() {
                                     <TableHead>Tracking Number</TableHead>
                                     <TableHead>Product</TableHead>
                                     {isCustomer && <TableHead>Reshipper</TableHead>}
-                                    {isReshipper && <TableHead>Customer</TableHead>}
+                                    {(isReshipper || isModerator) && <TableHead>Customer</TableHead>}
+                                    {isModerator && <TableHead>Assigned Reshipper</TableHead>}
                                     <TableHead>Route</TableHead>
                                     <TableHead>Status</TableHead>
-                                    {isReshipper && <TableHead>Actions</TableHead>}
+                                    {(isReshipper || isModerator) && <TableHead>Actions</TableHead>}
                                     {isCustomer && <TableHead>Actions</TableHead>}
                                 </TableRow>
                             </TableHeader>
@@ -392,9 +399,20 @@ export default function ShipmentsPage() {
                                                 {shipment.recipient?.full_name || shipment.recipient?.email || 'N/A'}
                                             </TableCell>
                                         )}
-                                        {isReshipper && (
+                                        {(isReshipper || isModerator) && (
                                             <TableCell>
-                                                {shipment.sender?.full_name || 'Customer'}
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{shipment.sender?.full_name || 'Unknown'}</span>
+                                                    <span className="text-xs text-muted-foreground">{shipment.sender?.email}</span>
+                                                </div>
+                                            </TableCell>
+                                        )}
+                                        {isModerator && (
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{shipment.recipient?.full_name || 'Unassigned'}</span>
+                                                    <span className="text-xs text-muted-foreground">{shipment.recipient?.email}</span>
+                                                </div>
                                             </TableCell>
                                         )}
                                         <TableCell>
@@ -408,7 +426,7 @@ export default function ShipmentsPage() {
                                                 {shipment.status.replace('_', ' ')}
                                             </Badge>
                                         </TableCell>
-                                        {isReshipper && (
+                                        {(isReshipper || isModerator) && (
                                             <TableCell>
                                                 <Select
                                                     value={shipment.status}

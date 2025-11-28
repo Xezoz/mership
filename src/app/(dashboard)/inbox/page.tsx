@@ -40,6 +40,7 @@ interface Conversation {
 export default function InboxPage() {
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [reshippers, setReshippers] = useState<Profile[]>([])
+    const [moderators, setModerators] = useState<Profile[]>([])
     const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
     const [selectedReshipper, setSelectedReshipper] = useState<Profile | null>(null)
     const [messages, setMessages] = useState<Message[]>([])
@@ -116,8 +117,12 @@ export default function InboxPage() {
                 .select('*')
                 .in('role', ['reshipper', 'moderator'])
 
-            if (error) console.error('Error fetching available users:', error)
-            else setReshippers(data || [])
+            if (error) {
+                console.error('Error fetching available users:', error)
+            } else if (data) {
+                setReshippers(data.filter(p => p.role === 'reshipper'))
+                setModerators(data.filter(p => p.role === 'moderator'))
+            }
         }
 
         fetchAvailableUsers()
@@ -287,33 +292,60 @@ export default function InboxPage() {
                 <ScrollArea className="flex-1">
                     <div className="flex flex-col">
                         {/* Show Reshippers List (Customers Only) */}
-                        {isCustomer && reshippers.length > 0 && (
+                        {isCustomer && (
                             <>
-                                <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">Available Reshippers</div>
-                                {reshippers.map((reshipper) => (
-                                    <button
-                                        key={reshipper.id}
-                                        onClick={() => handleStartConversation(reshipper)}
-                                        className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
-                                    >
-                                        <Avatar>
-                                            <AvatarImage src={reshipper.avatar_url || undefined} />
-                                            <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1 overflow-hidden">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-semibold">{reshipper.full_name || 'User'}</span>
-                                                {reshipper.role === 'moderator' && (
-                                                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80">
-                                                        Support
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <p className="text-xs text-muted-foreground">Click to start conversation</p>
-                                        </div>
-                                        <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                    </button>
-                                ))}
+                                {/* Support Section */}
+                                {moderators.length > 0 && (
+                                    <>
+                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">Support Team</div>
+                                        {moderators.map((mod) => (
+                                            <button
+                                                key={mod.id}
+                                                onClick={() => handleStartConversation(mod)}
+                                                className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                            >
+                                                <Avatar>
+                                                    <AvatarImage src={mod.avatar_url || undefined} />
+                                                    <AvatarFallback>{mod.full_name?.[0] || 'S'}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1 overflow-hidden">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
+                                                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80">
+                                                            Support
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground">Click to start conversation</p>
+                                                </div>
+                                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                        ))}
+                                    </>
+                                )}
+
+                                {/* Reshippers Section */}
+                                {reshippers.length > 0 && (
+                                    <>
+                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Available Reshippers</div>
+                                        {reshippers.map((reshipper) => (
+                                            <button
+                                                key={reshipper.id}
+                                                onClick={() => handleStartConversation(reshipper)}
+                                                className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                            >
+                                                <Avatar>
+                                                    <AvatarImage src={reshipper.avatar_url || undefined} />
+                                                    <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1 overflow-hidden">
+                                                    <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
+                                                    <p className="text-xs text-muted-foreground">Click to start conversation</p>
+                                                </div>
+                                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                            </button>
+                                        ))}
+                                    </>
+                                )}
                                 {conversations.length > 0 && <div className="px-4 py-2 text-xs font-semibold text-muted-foreground border-t mt-2">Your Conversations</div>}
                             </>
                         )}
