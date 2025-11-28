@@ -401,7 +401,10 @@ export default function InboxPage() {
                                 if (isReshipper) {
                                     return conv.other_user?.role !== 'moderator'
                                 }
-                                // For moderators: show all conversations
+                                // For moderators: exclude reshippers (shown in Available Reshippers)
+                                if (isModerator) {
+                                    return conv.other_user?.role !== 'reshipper'
+                                }
                                 return true
                             })
                             .map((conv) => (
