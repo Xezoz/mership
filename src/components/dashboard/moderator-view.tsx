@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { StatsCard } from '@/components/stats-card'
-import { DollarSign, Users, ArrowUpRight, ArrowDownLeft, Clock, Loader2, Package } from 'lucide-react'
+import { DollarSign, Users, ArrowUpRight, ArrowDownLeft, Clock, Loader2, Package, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
