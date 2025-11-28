@@ -25,10 +25,15 @@ import { Separator } from '@/components/ui/separator'
 import { Database } from '@/lib/supabase/database.types'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
-type Conversation = Database['public']['Tables']['conversations']['Row'] & {
-    other_user?: Profile
-}
 type Message = Database['public']['Tables']['messages']['Row']
+
+interface Conversation {
+    id: string
+    other_user?: Profile
+    last_message?: string
+    last_message_time?: string
+    unread_count?: number
+}
 
 export default function InboxPage() {
     const [conversations, setConversations] = useState<Conversation[]>([])
