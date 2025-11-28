@@ -46,9 +46,11 @@ export function ModeratorDashboard() {
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
             // 2. Fetch All Transactions (Recent) - without join to avoid FK issues
+            // Exclude pending withdrawals (those are shown in Payout dialog)
             const { data: withdrawalsData, error: withdrawalsError } = await supabase
                 .from('transactions')
                 .select('*')
+                .not('and', '(type.eq.withdrawal,status.eq.pending)')
                 .order('created_at', { ascending: false })
                 .limit(50)
 
