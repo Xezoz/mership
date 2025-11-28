@@ -128,11 +128,31 @@ export async function POST(request: Request) {
 
         console.log('Payment verified as completed, updating balance...');
 
-        // Mark as completed and update balance
-        await supabase
+        // Mark as completed and update balance ATOMICALLY
+        // Only update if status is currently 'pending'
+        const { data: updatedTx, error: updateError } = await supabase
             .from('transactions')
             .update({ status: 'completed' })
-            .eq('id', transaction_id);
+            .eq('id', transaction_id)
+            .eq('status', 'pending') // CRITICAL: Only update if pending
+            .select()
+            .single();
+
+        if (updateError && updateError.code !== 'PGRST116') { // PGRST116 is "Row not found" (which means it wasn't pending)
+            console.error('Error updating transaction:', updateError);
+            return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+        }
+
+        if (!updatedTx) {
+            console.log('Transaction already completed or not found');
+            return NextResponse.json({
+                completed: true,
+                already_processed: true,
+                message: 'Transaction was already processed'
+            });
+        }
+
+        console.log('Transaction status updated to completed, adding balance...');
 
         const { data: profile } = await supabase
             .from('profiles')

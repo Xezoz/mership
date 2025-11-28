@@ -27,38 +27,48 @@ export async function POST(request: Request) {
             const transactionId = metadata?.transaction_id;
 
             if (transactionId) {
-                // Update transaction status
-                const { error: updateError } = await supabase
+                // Update transaction status ATOMICALLY
+                // Only update if status is currently 'pending'
+                const { data: updatedTx, error: updateError } = await supabase
                     .from('transactions')
                     .update({ status: 'completed' })
-                    .eq('id', transactionId);
+                    .eq('id', transactionId)
+                    .eq('status', 'pending') // CRITICAL: Only update if pending
+                    .select()
+                    .single();
 
-                if (updateError) {
+                if (updateError && updateError.code !== 'PGRST116') {
                     console.error('Error updating transaction:', updateError);
                     return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
                 }
 
-                // Update user balance
-                const { data: transaction } = await supabase
-                    .from('transactions')
-                    .select('user_id, amount')
-                    .eq('id', transactionId)
-                    .single();
+                if (updatedTx) {
+                    console.log('Transaction status updated to completed via webhook, adding balance...');
 
-                if (transaction) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('balance')
-                        .eq('id', transaction.user_id)
+                    // Update user balance
+                    const { data: transaction } = await supabase
+                        .from('transactions')
+                        .select('user_id, amount')
+                        .eq('id', transactionId)
                         .single();
 
-                    const currentBalance = profile?.balance || 0;
-                    const newBalance = currentBalance + transaction.amount;
+                    if (transaction) {
+                        const { data: profile } = await supabase
+                            .from('profiles')
+                            .select('balance')
+                            .eq('id', transaction.user_id)
+                            .single();
 
-                    await supabase
-                        .from('profiles')
-                        .update({ balance: newBalance })
-                        .eq('id', transaction.user_id);
+                        const currentBalance = profile?.balance || 0;
+                        const newBalance = currentBalance + transaction.amount;
+
+                        await supabase
+                            .from('profiles')
+                            .update({ balance: newBalance })
+                            .eq('id', transaction.user_id);
+                    }
+                } else {
+                    console.log('Transaction already completed or not found (webhook)');
                 }
             }
         }
