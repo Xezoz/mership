@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Search, Send, MoreVertical, Loader2, MessageSquare, MapPin, Check, Ban, Copy, CheckCircle2 } from 'lucide-react'
+import { Search, Send, MoreVertical, Loader2, MessageSquare, MapPin, Check, Ban, Copy, CheckCircle2, Shield, Headphones } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
     DropdownMenu,
@@ -51,7 +51,7 @@ export default function InboxPage() {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const supabase = createBrowserClient()
-    const { role, isCustomer, isReshipper } = useUserRole()
+    const { role, isCustomer, isReshipper, isModerator } = useUserRole()
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -81,13 +81,29 @@ export default function InboxPage() {
                         .eq('id', otherUserId)
                         .single()
 
+                    // Calculate unread count
+                    const { count } = await supabase
+                        .from('messages')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('conversation_id', conv.id)
+                        .eq('read', false)
+                        .neq('sender_id', user.id)
+
                     return {
                         ...conv,
-                        other_user: profile || { id: otherUserId, email: 'Unknown', full_name: 'Unknown User', avatar_url: null, role: 'customer' as const, created_at: '', updated_at: '' }
+                        other_user: profile || { id: otherUserId, email: 'Unknown', full_name: 'Unknown User', avatar_url: null, role: 'customer' as const, created_at: '', updated_at: '' },
+                        unread_count: count || 0
                     }
                 }))
 
-                setConversations(conversationsWithDetails)
+                // Sort: Unread first, then by date
+                const sortedConversations = conversationsWithDetails.sort((a, b) => {
+                    if ((a.unread_count || 0) > 0 && (b.unread_count || 0) === 0) return -1
+                    if ((a.unread_count || 0) === 0 && (b.unread_count || 0) > 0) return 1
+                    return new Date(b.last_message_at || 0).getTime() - new Date(a.last_message_at || 0).getTime()
+                })
+
+                setConversations(sortedConversations)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
             } finally {
@@ -109,13 +125,22 @@ export default function InboxPage() {
 
     // Fetch Reshippers and Moderators (only for customers)
     useEffect(() => {
-        if (!isCustomer) return
+        if (!isCustomer && !isReshipper && !isModerator) return
 
         const fetchAvailableUsers = async () => {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .in('role', ['reshipper', 'moderator'])
+            let query = supabase.from('profiles').select('*')
+
+            if (isCustomer) {
+                query = query.in('role', ['reshipper', 'moderator'])
+            } else if (isReshipper) {
+                query = query.eq('role', 'moderator')
+            } else if (isModerator) {
+                query = query.eq('role', 'reshipper')
+            } else {
+                return // Should not happen
+            }
+
+            const { data, error } = await query
 
             if (error) {
                 console.error('Error fetching available users:', error)
@@ -126,7 +151,7 @@ export default function InboxPage() {
         }
 
         fetchAvailableUsers()
-    }, [isCustomer, supabase])
+    }, [isCustomer, isReshipper, isModerator, supabase])
 
     // Fetch Messages for Selected Conversation
     useEffect(() => {
@@ -138,6 +163,23 @@ export default function InboxPage() {
                 .select('*')
                 .eq('conversation_id', selectedConversation.id)
                 .order('created_at', { ascending: true })
+
+            // Mark messages as read
+            if (selectedConversation.unread_count && selectedConversation.unread_count > 0) {
+                const { error: updateError } = await supabase
+                    .from('messages')
+                    .update({ read: true })
+                    .eq('conversation_id', selectedConversation.id)
+                    .neq('sender_id', currentUserId)
+                    .eq('read', false)
+
+                if (!updateError) {
+                    // Update local state to clear unread count
+                    setConversations(prev => prev.map(c =>
+                        c.id === selectedConversation.id ? { ...c, unread_count: 0 } : c
+                    ))
+                }
+            }
 
             if (error) {
                 console.error('Error fetching messages:', error)
@@ -291,8 +333,8 @@ export default function InboxPage() {
                 </div>
                 <ScrollArea className="flex-1">
                     <div className="flex flex-col">
-                        {/* Show Reshippers List (Customers Only) */}
-                        {isCustomer && (
+                        {/* Show Reshippers/Support List (Customers, Reshippers, Moderators) */}
+                        {(isCustomer || isReshipper || isModerator) && (
                             <>
                                 {/* Support Section */}
                                 {moderators.length > 0 && (
@@ -312,6 +354,7 @@ export default function InboxPage() {
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
                                                         <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80">
+                                                            <Shield className="h-3 w-3 mr-1" />
                                                             Support
                                                         </span>
                                                     </div>
@@ -351,7 +394,7 @@ export default function InboxPage() {
                         )}
 
                         {/* Show Conversations */}
-                        {conversations.length === 0 && !isCustomer && (
+                        {conversations.length === 0 && !isCustomer && !isReshipper && !isModerator && (
                             <div className="p-4 text-center text-sm text-muted-foreground">No conversations yet</div>
                         )}
                         {conversations.map((conv) => (
@@ -367,23 +410,30 @@ export default function InboxPage() {
                                 <div className="flex-1 overflow-hidden">
                                     <div className="flex items-center justify-between">
                                         <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {(() => {
-                                                if (!conv.last_message_at) return 'No messages'
-                                                const date = new Date(conv.last_message_at)
-                                                const now = new Date()
-                                                const diffMs = now.getTime() - date.getTime()
-                                                const diffMins = Math.floor(diffMs / 60000)
-                                                const diffHours = Math.floor(diffMs / 3600000)
-                                                const diffDays = Math.floor(diffMs / 86400000)
+                                        <div className="flex flex-col items-end gap-1">
+                                            <span className="text-xs text-muted-foreground">
+                                                {(() => {
+                                                    if (!conv.last_message_at) return 'No messages'
+                                                    const date = new Date(conv.last_message_at)
+                                                    const now = new Date()
+                                                    const diffMs = now.getTime() - date.getTime()
+                                                    const diffMins = Math.floor(diffMs / 60000)
+                                                    const diffHours = Math.floor(diffMs / 3600000)
+                                                    const diffDays = Math.floor(diffMs / 86400000)
 
-                                                if (diffMins < 1) return 'Just now'
-                                                if (diffMins < 60) return `${diffMins}m ago`
-                                                if (diffHours < 24) return `${diffHours}h ago`
-                                                if (diffDays < 7) return `${diffDays}d ago`
-                                                return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
-                                            })()}
-                                        </span>
+                                                    if (diffMins < 1) return 'Just now'
+                                                    if (diffMins < 60) return `${diffMins}m ago`
+                                                    if (diffHours < 24) return `${diffHours}h ago`
+                                                    if (diffDays < 7) return `${diffDays}d ago`
+                                                    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+                                                })()}
+                                            </span>
+                                            {conv.unread_count && conv.unread_count > 0 ? (
+                                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-medium text-white">
+                                                    {conv.unread_count}
+                                                </span>
+                                            ) : null}
+                                        </div>
                                     </div>
                                     <p className="truncate text-sm text-muted-foreground">
                                         {conv.last_message || 'No messages yet'}
