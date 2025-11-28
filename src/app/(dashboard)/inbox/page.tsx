@@ -106,21 +106,21 @@ export default function InboxPage() {
         }
     }, [supabase])
 
-    // Fetch Reshippers (only for customers)
+    // Fetch Reshippers and Moderators (only for customers)
     useEffect(() => {
         if (!isCustomer) return
 
-        const fetchReshippers = async () => {
+        const fetchAvailableUsers = async () => {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('role', 'reshipper')
+                .in('role', ['reshipper', 'moderator'])
 
-            if (error) console.error('Error fetching reshippers:', error)
+            if (error) console.error('Error fetching available users:', error)
             else setReshippers(data || [])
         }
 
-        fetchReshippers()
+        fetchAvailableUsers()
     }, [isCustomer, supabase])
 
     // Fetch Messages for Selected Conversation
@@ -301,7 +301,14 @@ export default function InboxPage() {
                                             <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 overflow-hidden">
-                                            <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold">{reshipper.full_name || 'User'}</span>
+                                                {reshipper.role === 'moderator' && (
+                                                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80">
+                                                        Support
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-muted-foreground">Click to start conversation</p>
                                         </div>
                                         <MessageSquare className="h-4 w-4 text-muted-foreground" />
@@ -368,7 +375,9 @@ export default function InboxPage() {
                                 </Avatar>
                                 <div>
                                     <h3 className="font-semibold">{selectedConversation.other_user?.full_name || 'User'}</h3>
-                                    <p className="text-xs text-muted-foreground">{selectedConversation.other_user?.role === 'reshipper' ? 'Reshipper' : 'Customer'}</p>
+                                    <p className="text-xs text-muted-foreground capitalize">
+                                        {selectedConversation.other_user?.role === 'moderator' ? 'Support Team' : selectedConversation.other_user?.role}
+                                    </p>
                                 </div>
                             </div>
                             {isCustomer && selectedConversation.other_user?.role === 'reshipper' && (

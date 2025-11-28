@@ -9,37 +9,83 @@ export type Json =
 export type Database = {
     public: {
         Tables: {
+
+            conversations: {
+                Row: {
+                    created_at: string
+                    customer_id: string
+                    id: string
+                    last_message: string | null
+                    last_message_at: string | null
+                    reshipper_id: string
+                    updated_at: string
+                }
+                Insert: {
+                    created_at?: string
+                    customer_id: string
+                    id?: string
+                    last_message?: string | null
+                    last_message_at?: string | null
+                    reshipper_id: string
+                    updated_at?: string
+                }
+                Update: {
+                    created_at?: string
+                    customer_id?: string
+                    id?: string
+                    last_message?: string | null
+                    last_message_at?: string | null
+                    reshipper_id?: string
+                    updated_at?: string
+                }
+                Relationships: [
+                    {
+                        foreignKeyName: "conversations_customer_id_fkey"
+                        columns: ["customer_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "conversations_reshipper_id_fkey"
+                        columns: ["reshipper_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
+            }
             messages: {
                 Row: {
                     content: string
+                    conversation_id: string
                     created_at: string
                     id: string
                     read: boolean
-                    recipient_id: string
                     sender_id: string
                 }
                 Insert: {
                     content: string
+                    conversation_id: string
                     created_at?: string
                     id?: string
                     read?: boolean
-                    recipient_id: string
                     sender_id: string
                 }
                 Update: {
                     content?: string
+                    conversation_id?: string
                     created_at?: string
                     id?: string
                     read?: boolean
-                    recipient_id?: string
                     sender_id?: string
                 }
                 Relationships: [
                     {
-                        foreignKeyName: "messages_recipient_id_fkey"
-                        columns: ["recipient_id"]
+                        foreignKeyName: "messages_conversation_id_fkey"
+                        columns: ["conversation_id"]
                         isOneToOne: false
-                        referencedRelation: "profiles"
+                        referencedRelation: "conversations"
                         referencedColumns: ["id"]
                     },
                     {
