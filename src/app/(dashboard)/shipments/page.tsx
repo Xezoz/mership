@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select'
 import { CreatePackageDialog } from '@/components/create-package-dialog'
 import { ShippingLabelDialog } from '@/components/shipping-label-dialog'
+import { ShipmentDetailsDialog } from '@/components/shipment-details-dialog'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
 
@@ -42,6 +43,8 @@ export default function ShipmentsPage() {
     const [userBalance, setUserBalance] = useState(0)
     const [shippingDialogOpen, setShippingDialogOpen] = useState(false)
     const [selectedShipment, setSelectedShipment] = useState<{ id: string; trackingNumber: string } | null>(null)
+    const [detailsDialogOpen, setDetailsDialogOpen] = useState(false)
+    const [selectedDetailsShipment, setSelectedDetailsShipment] = useState<Shipment | null>(null)
     const supabase = createBrowserClient()
     const { isReshipper, isCustomer, isModerator } = useUserRole()
 
@@ -454,21 +457,36 @@ export default function ShipmentsPage() {
                                         </TableCell>
                                         {(isReshipper || isModerator) && (
                                             <TableCell>
-                                                <Select
-                                                    value={shipment.status}
-                                                    onValueChange={(value) => handleStatusUpdate(shipment.id, value)}
-                                                >
-                                                    <SelectTrigger className="w-[140px]">
-                                                        <SelectValue />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="pending">Pending</SelectItem>
-                                                        <SelectItem value="received">Received</SelectItem>
-                                                        <SelectItem value="in_transit">In Transit</SelectItem>
-                                                        <SelectItem value="delivered">Delivered</SelectItem>
-                                                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
+                                                <div className="flex items-center gap-2">
+                                                    <Select
+                                                        value={shipment.status}
+                                                        onValueChange={(value) => handleStatusUpdate(shipment.id, value)}
+                                                    >
+                                                        <SelectTrigger className="w-[130px]">
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="pending">Pending</SelectItem>
+                                                            <SelectItem value="received">Received</SelectItem>
+                                                            <SelectItem value="in_transit">In Transit</SelectItem>
+                                                            <SelectItem value="delivered">Delivered</SelectItem>
+                                                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+
+                                                    {shipment.shipping_label_url && (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setSelectedDetailsShipment(shipment)
+                                                                setDetailsDialogOpen(true)
+                                                            }}
+                                                        >
+                                                            View Details
+                                                        </Button>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                         )}
                                         {isCustomer && (
@@ -514,6 +532,15 @@ export default function ShipmentsPage() {
                         fetchShipments()
                         fetchUserBalance()
                     }}
+                />
+            )}
+
+            {/* Shipment Details Dialog */}
+            {selectedDetailsShipment && (
+                <ShipmentDetailsDialog
+                    open={detailsDialogOpen}
+                    onOpenChange={setDetailsDialogOpen}
+                    shipment={selectedDetailsShipment}
                 />
             )}
         </div>
