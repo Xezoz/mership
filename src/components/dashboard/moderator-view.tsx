@@ -1,20 +1,38 @@
+```
 'use client'
 
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
-import { Loader2, DollarSign, Users, ArrowUpRight, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
 import { StatsCard } from '@/components/stats-card'
+import { DollarSign, Users, ArrowUpRight, ArrowDownLeft, Clock, Loader2, Package } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import { Database } from '@/lib/supabase/database.types'
+import { ModeratorCharts } from './moderator-charts'
+import { TopReshippersCard } from './top-reshippers-card'
+import { subDays, format, isSameDay } from 'date-fns'
 
 type Transaction = Database['public']['Tables']['transactions']['Row'] & {
     profiles: {
         full_name: string | null
         email: string | null
     } | null
+}
+
+type ChartData = {
+    date: string
+    revenue: number
+    packages: number
+}
+
+type TopReshipper = {
+    id: string
+    full_name: string | null
+    email: string | null
+    shipment_count: number
+    rank: number
 }
 
 export function ModeratorDashboard() {
@@ -26,22 +44,30 @@ export function ModeratorDashboard() {
         activeReshippersCount: 0
     })
     const [withdrawals, setWithdrawals] = useState<Transaction[]>([])
+    const [chartData, setChartData] = useState<ChartData[]>([])
+    const [topReshippers, setTopReshippers] = useState<TopReshipper[]>([])
+    const [timeRange, setTimeRange] = useState('7d')
     const [processingId, setProcessingId] = useState<string | null>(null)
 
-    useEffect(() => {
-        fetchData()
-    }, [])
 
-    const fetchData = async () => {
-        setLoading(true)
+    useEffect(() => {
+        fetchModeratorData()
+    }, [timeRange])
+
+    const fetchModeratorData = async () => {
         try {
-            // 1. Fetch Total Revenue (Sum of all completed deposits)
+            setLoading(true)
+            
+            // Calculate date range
+            const days = parseInt(timeRange)
+            const startDate = subDays(new Date(), days).toISOString()
+
+            // 1. Fetch Total Revenue (All time)
             const { data: revenueData, error: revenueError } = await supabase
                 .from('transactions')
-                .select('amount')
-                .eq('type', 'deposit')
-                .eq('status', 'completed')
-
+                .select('amount, created_at')
+                .eq('type', 'deposit') // Assuming deposits to system are revenue
+            
             if (revenueError) throw revenueError
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
@@ -56,10 +82,9 @@ export function ModeratorDashboard() {
                 console.error('Transactions query error:', withdrawalsError)
                 throw withdrawalsError
             }
-            console.log('Transactions data fetched:', withdrawalsData?.length, 'records')
 
             // Filter out pending withdrawals (those are shown in Payout dialog)
-            const filteredTransactions = withdrawalsData?.filter(tx =>
+            const filteredTransactions = withdrawalsData?.filter(tx => 
                 !(tx.type === 'withdrawal' && tx.status === 'pending')
             ).slice(0, 50) || []
 
@@ -93,19 +118,97 @@ export function ModeratorDashboard() {
                 console.error('Reshippers query error:', reshippersError)
                 throw reshippersError
             }
-            console.log('Reshippers count:', reshippersCount)
 
-            console.log('Moderator Dashboard Data:', {
-                totalRevenue,
-                withdrawalsCount: enrichedWithdrawals?.length,
-                reshippersCount
+            // 4. Fetch Chart Data (Revenue & Packages)
+            // Fetch shipments for package count
+            const { data: shipmentsData } = await supabase
+                .from('shipments')
+                .select('created_at, recipient_id')
+                .gte('created_at', startDate)
+            
+            // Process chart data
+            const chartDataPoints: ChartData[] = []
+            for (let i = days - 1; i >= 0; i--) {
+                const date = subDays(new Date(), i)
+                const dateStr = format(date, 'yyyy-MM-dd')
+                
+                // Calculate daily revenue (from deposits)
+                const dailyRevenue = revenueData
+                    ?.filter(tx => isSameDay(new Date(tx.created_at), date))
+                    .reduce((sum, tx) => sum + tx.amount, 0) || 0
+
+                // Calculate daily packages
+                const dailyPackages = shipmentsData
+                    ?.filter(s => isSameDay(new Date(s.created_at), date))
+                    .length || 0
+
+                chartDataPoints.push({
+                    date: dateStr,
+                    revenue: dailyRevenue,
+                    packages: dailyPackages
+                })
+            }
+            setChartData(chartDataPoints)
+
+            // 5. Calculate Top Reshippers
+            // We need to fetch all shipments to aggregate correctly (or at least a large enough sample)
+            // Ideally this should be a DB view, but for now we'll aggregate client-side
+            const { data: allShipments } = await supabase
+                .from('shipments')
+                .select('recipient_id')
+                .not('recipient_id', 'is', null)
+            
+            const reshipperCounts = new Map<string, number>()
+            allShipments?.forEach(s => {
+                if (s.recipient_id) {
+                    reshipperCounts.set(s.recipient_id, (reshipperCounts.get(s.recipient_id) || 0) + 1)
+                }
             })
+
+            // Sort and take top 10
+            const sortedReshippers = [...reshipperCounts.entries()]
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+            
+            // Fetch profiles for top reshippers
+            let topReshippersList: TopReshipper[] = []
+            if (sortedReshippers.length > 0) {
+                const topIds = sortedReshippers.map(([id]) => id)
+                const { data: topProfiles } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, email')
+                    .in('id', topIds)
+                
+                const topProfilesMap = new Map(topProfiles?.map(p => [p.id, p]) || [])
+                
+                topReshippersList = sortedReshippers.map(([id, count], index) => ({
+                    id,
+                    full_name: topProfilesMap.get(id)?.full_name || 'Unknown',
+                    email: topProfilesMap.get(id)?.email || null,
+                    shipment_count: count,
+                    rank: index + 1
+                }))
+            }
+            setTopReshippers(topReshippersList)
 
             setStats({
                 totalRevenue,
-                pendingWithdrawalsCount: enrichedWithdrawals?.length || 0,
+                pendingWithdrawalsCount: enrichedWithdrawals?.length || 0, // This logic might need adjustment if we filter pending out of the list but want to show count
                 activeReshippersCount: reshippersCount || 0
             })
+            
+            // For pending withdrawals count, we should actually fetch the count separately since we filtered them out of the list
+            const { count: pendingCount } = await supabase
+                .from('transactions')
+                .select('*', { count: 'exact', head: true })
+                .eq('type', 'withdrawal')
+                .eq('status', 'pending')
+            
+            setStats(prev => ({
+                ...prev,
+                pendingWithdrawalsCount: pendingCount || 0
+            }))
+
             setWithdrawals(enrichedWithdrawals)
 
         } catch (error) {
@@ -148,7 +251,7 @@ export function ModeratorDashboard() {
                             type: 'deposit', // Treat as deposit to add back
                             amount: transaction.amount,
                             status: 'completed',
-                            description: `Refund for rejected withdrawal ${transactionId}`
+                            description: `Refund for rejected withdrawal ${ transactionId } `
                         })
 
                         // And update profile balance
@@ -160,11 +263,11 @@ export function ModeratorDashboard() {
                 }
             }
 
-            toast.success(`Withdrawal ${action}ed successfully`)
-            fetchData() // Refresh list
+            toast.success(`Withdrawal ${ action }ed successfully`)
+            fetchModeratorData() // Refresh list
         } catch (error) {
-            console.error(`Error ${action}ing withdrawal:`, error)
-            toast.error(`Failed to ${action} withdrawal`)
+            console.error(`Error ${ action }ing withdrawal: `, error)
+            toast.error(`Failed to ${ action } withdrawal`)
         } finally {
             setProcessingId(null)
         }
@@ -182,27 +285,29 @@ export function ModeratorDashboard() {
         <div className="space-y-6">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Moderator Dashboard</h2>
-                <p className="text-muted-foreground">Overview of platform revenue and pending actions.</p>
+                <p className="text-muted-foreground">
+                    System overview and management
+                </p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <StatsCard
                     title="Total Revenue"
                     value={stats.totalRevenue}
                     change={0}
-                    changeLabel="Lifetime"
-                    description="Total deposits processed"
+                    changeLabel="All time"
+                    description="Total system revenue"
                     icon={DollarSign}
                     type="currency"
                 />
                 <StatsCard
                     title="Pending Withdrawals"
-                    value={withdrawals.filter(tx => tx.type === 'withdrawal' && tx.status === 'pending').length}
+                    value={stats.pendingWithdrawalsCount}
                     change={0}
                     changeLabel="Requests"
-                    description="Awaiting approval"
-                    icon={AlertCircle}
+                    description="Waiting for approval"
+                    icon={Clock}
                     type="number"
                 />
                 <StatsCard
