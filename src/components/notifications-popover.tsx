@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Database } from '@/lib/supabase/database.types'
+import { toast } from 'sonner'
 
 type Notification = Database['public']['Tables']['notifications']['Row']
 
@@ -28,7 +29,15 @@ export function NotificationsPopover() {
                 event: 'INSERT',
                 schema: 'public',
                 table: 'notifications'
-            }, () => {
+            }, (payload) => {
+                const newNotification = payload.new as Notification
+
+                // Show in-app toast notification
+                toast(newNotification.title, {
+                    description: newNotification.message,
+                    icon: getNotificationIcon(newNotification.type),
+                })
+
                 fetchNotifications()
             })
             .subscribe()
