@@ -1,4 +1,3 @@
-```
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -57,7 +56,7 @@ export function ModeratorDashboard() {
     const fetchModeratorData = async () => {
         try {
             setLoading(true)
-            
+
             // Calculate date range
             const days = parseInt(timeRange)
             const startDate = subDays(new Date(), days).toISOString()
@@ -67,7 +66,7 @@ export function ModeratorDashboard() {
                 .from('transactions')
                 .select('amount, created_at')
                 .eq('type', 'deposit') // Assuming deposits to system are revenue
-            
+
             if (revenueError) throw revenueError
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
@@ -84,7 +83,7 @@ export function ModeratorDashboard() {
             }
 
             // Filter out pending withdrawals (those are shown in Payout dialog)
-            const filteredTransactions = withdrawalsData?.filter(tx => 
+            const filteredTransactions = withdrawalsData?.filter(tx =>
                 !(tx.type === 'withdrawal' && tx.status === 'pending')
             ).slice(0, 50) || []
 
@@ -125,13 +124,13 @@ export function ModeratorDashboard() {
                 .from('shipments')
                 .select('created_at, recipient_id')
                 .gte('created_at', startDate)
-            
+
             // Process chart data
             const chartDataPoints: ChartData[] = []
             for (let i = days - 1; i >= 0; i--) {
                 const date = subDays(new Date(), i)
                 const dateStr = format(date, 'yyyy-MM-dd')
-                
+
                 // Calculate daily revenue (from deposits)
                 const dailyRevenue = revenueData
                     ?.filter(tx => isSameDay(new Date(tx.created_at), date))
@@ -157,7 +156,7 @@ export function ModeratorDashboard() {
                 .from('shipments')
                 .select('recipient_id')
                 .not('recipient_id', 'is', null)
-            
+
             const reshipperCounts = new Map<string, number>()
             allShipments?.forEach(s => {
                 if (s.recipient_id) {
@@ -169,7 +168,7 @@ export function ModeratorDashboard() {
             const sortedReshippers = [...reshipperCounts.entries()]
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10)
-            
+
             // Fetch profiles for top reshippers
             let topReshippersList: TopReshipper[] = []
             if (sortedReshippers.length > 0) {
@@ -178,9 +177,9 @@ export function ModeratorDashboard() {
                     .from('profiles')
                     .select('id, full_name, email')
                     .in('id', topIds)
-                
+
                 const topProfilesMap = new Map(topProfiles?.map(p => [p.id, p]) || [])
-                
+
                 topReshippersList = sortedReshippers.map(([id, count], index) => ({
                     id,
                     full_name: topProfilesMap.get(id)?.full_name || 'Unknown',
@@ -196,14 +195,14 @@ export function ModeratorDashboard() {
                 pendingWithdrawalsCount: enrichedWithdrawals?.length || 0, // This logic might need adjustment if we filter pending out of the list but want to show count
                 activeReshippersCount: reshippersCount || 0
             })
-            
+
             // For pending withdrawals count, we should actually fetch the count separately since we filtered them out of the list
             const { count: pendingCount } = await supabase
                 .from('transactions')
                 .select('*', { count: 'exact', head: true })
                 .eq('type', 'withdrawal')
                 .eq('status', 'pending')
-            
+
             setStats(prev => ({
                 ...prev,
                 pendingWithdrawalsCount: pendingCount || 0
@@ -251,7 +250,7 @@ export function ModeratorDashboard() {
                             type: 'deposit', // Treat as deposit to add back
                             amount: transaction.amount,
                             status: 'completed',
-                            description: `Refund for rejected withdrawal ${ transactionId } `
+                            description: `Refund for rejected withdrawal ${transactionId} `
                         })
 
                         // And update profile balance
@@ -263,11 +262,11 @@ export function ModeratorDashboard() {
                 }
             }
 
-            toast.success(`Withdrawal ${ action }ed successfully`)
+            toast.success(`Withdrawal ${action}ed successfully`)
             fetchModeratorData() // Refresh list
         } catch (error) {
-            console.error(`Error ${ action }ing withdrawal: `, error)
-            toast.error(`Failed to ${ action } withdrawal`)
+            console.error(`Error ${action}ing withdrawal: `, error)
+            toast.error(`Failed to ${action} withdrawal`)
         } finally {
             setProcessingId(null)
         }
