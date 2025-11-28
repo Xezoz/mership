@@ -81,18 +81,21 @@ export default function InboxPage() {
                         .eq('id', otherUserId)
                         .single()
 
-                    // Calculate unread count
-                    const { count } = await supabase
+                    // Calculate unread count - use select instead of head because neq doesn't work with head
+                    const { data: unreadMessages, error: countError } = await supabase
                         .from('messages')
-                        .select('*', { count: 'exact', head: true })
+                        .select('id')
                         .eq('conversation_id', conv.id)
                         .eq('read', false)
                         .neq('sender_id', user.id)
 
+                    const unreadCount = unreadMessages?.length || 0
+                    console.log(`Conv ${conv.id.slice(0, 8)}: unread=${unreadCount}, error:`, countError)
+
                     return {
                         ...conv,
                         other_user: profile || { id: otherUserId, email: 'Unknown', full_name: 'Unknown User', avatar_url: null, role: 'customer' as const, created_at: '', updated_at: '' },
-                        unread_count: count || 0
+                        unread_count: unreadCount
                     }
                 }))
 
