@@ -29,10 +29,12 @@ type Message = Database['public']['Tables']['messages']['Row']
 
 interface Conversation {
     id: string
-    other_user?: Profile
+    customer_id: string
+    reshipper_id: string
     last_message?: string
-    last_message_time?: string
+    last_message_at?: string
     unread_count?: number
+    other_user?: Profile
 }
 
 export default function InboxPage() {
