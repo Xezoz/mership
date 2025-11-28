@@ -94,7 +94,10 @@ export default function InboxPage() {
                     return timeB - timeA // Most recent first
                 })
 
-                setConversations(sortedConversations)
+                // Deduplicate conversations based on ID
+                const uniqueConversations = Array.from(new Map(sortedConversations.map(c => [c.id, c])).values())
+
+                setConversations(uniqueConversations)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
             } finally {

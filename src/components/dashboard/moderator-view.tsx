@@ -56,6 +56,8 @@ export function ModeratorDashboard() {
     const fetchModeratorData = async () => {
         try {
             setLoading(true)
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) return
 
             // Calculate date range
             const days = parseInt(timeRange)

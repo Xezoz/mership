@@ -78,7 +78,7 @@ export default function DashboardPage() {
         if (!roleLoading && !isModerator) {
             fetchDashboardData()
         }
-    }, [roleLoading, isModerator])
+    }, [roleLoading, isModerator, timeRange])
 
     if (roleLoading) {
         return (
