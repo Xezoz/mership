@@ -487,6 +487,22 @@ export default function PaymentsPage() {
                                             onChange={(e) => setWithdrawAmount(e.target.value)}
                                             placeholder="0.00"
                                         />
+                                        <div className="flex gap-2 mt-2">
+                                            {[25, 50, 75, 100].map((percent) => (
+                                                <Button
+                                                    key={percent}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="flex-1 text-xs"
+                                                    onClick={() => {
+                                                        const amount = (balance * percent) / 100
+                                                        setWithdrawAmount(amount.toFixed(2))
+                                                    }}
+                                                >
+                                                    {percent === 100 ? 'Max' : `${percent}%`}
+                                                </Button>
+                                            ))}
+                                        </div>
                                         <p className="text-xs text-muted-foreground">
                                             Available: ${balance.toFixed(2)}
                                         </p>
