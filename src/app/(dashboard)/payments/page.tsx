@@ -488,6 +488,19 @@ export default function PaymentsPage() {
                             <Button
                                 variant="outline"
                                 className="w-full justify-start h-auto py-4"
+                                onClick={() => toast.info('Deduct Balance feature coming soon')}
+                            >
+                                <div className="flex flex-col items-start gap-1">
+                                    <span className="font-semibold flex items-center gap-2">
+                                        <TrendingDown className="h-4 w-4" />
+                                        Deduct Balance
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">Remove funds from a user</span>
+                                </div>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full justify-start h-auto py-4"
                                 onClick={() => toast.info('Payout feature coming soon')}
                             >
                                 <div className="flex flex-col items-start gap-1">

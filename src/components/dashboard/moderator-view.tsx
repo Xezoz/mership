@@ -45,13 +45,12 @@ export function ModeratorDashboard() {
             if (revenueError) throw revenueError
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
-            // 2. Fetch Pending Withdrawals
+            // 2. Fetch All Transactions (Recent)
             const { data: withdrawalsData, error: withdrawalsError } = await supabase
                 .from('transactions')
                 .select('*, profiles(full_name, email)')
-                .eq('type', 'withdrawal')
-                .eq('status', 'pending')
-                .order('created_at', { ascending: true })
+                .order('created_at', { ascending: false })
+                .limit(50)
 
             if (withdrawalsError) throw withdrawalsError
 
@@ -184,11 +183,11 @@ export function ModeratorDashboard() {
                 />
             </div>
 
-            {/* Pending Withdrawals Table */}
+            {/* All Transactions Table */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Pending Withdrawals</CardTitle>
-                    <CardDescription>Review and process reshipper withdrawal requests.</CardDescription>
+                    <CardTitle>Recent Transactions</CardTitle>
+                    <CardDescription>View all platform transactions.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {withdrawals.length === 0 ? (
@@ -201,41 +200,48 @@ export function ModeratorDashboard() {
                                 <div key={tx.id} className="flex flex-col md:flex-row md:items-center justify-between border rounded-lg p-4 gap-4">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-lg">${tx.amount.toFixed(2)}</span>
+                                            <span className="font-semibold text-lg">
+                                                {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
+                                            </span>
                                             <Badge variant="outline" className="capitalize">{tx.status}</Badge>
+                                            <Badge variant="secondary" className="capitalize">{tx.type}</Badge>
                                         </div>
                                         <div className="text-sm text-muted-foreground">
-                                            Requested by <span className="font-medium text-foreground">{tx.profiles?.full_name || 'Unknown User'}</span> ({tx.profiles?.email})
+                                            User: <span className="font-medium text-foreground">{tx.profiles?.full_name || 'Unknown User'}</span> ({tx.profiles?.email})
                                         </div>
                                         <div className="text-xs text-muted-foreground">
                                             {new Date(tx.created_at).toLocaleString()}
                                         </div>
                                         {/* Payment Details from Description */}
-                                        <div className="mt-2 bg-muted/50 p-2 rounded text-sm font-mono">
-                                            {tx.description}
-                                        </div>
+                                        {tx.description && (
+                                            <div className="mt-2 bg-muted/50 p-2 rounded text-sm font-mono">
+                                                {tx.description}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            size="sm"
-                                            variant="destructive"
-                                            disabled={!!processingId}
-                                            onClick={() => handleWithdrawalAction(tx.id, 'reject')}
-                                        >
-                                            {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-1" />}
-                                            Reject
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            className="bg-green-600 hover:bg-green-700"
-                                            disabled={!!processingId}
-                                            onClick={() => handleWithdrawalAction(tx.id, 'approve')}
-                                        >
-                                            {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
-                                            Approve (Paid)
-                                        </Button>
-                                    </div>
+                                    {tx.type === 'withdrawal' && tx.status === 'pending' && (
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                disabled={!!processingId}
+                                                onClick={() => handleWithdrawalAction(tx.id, 'reject')}
+                                            >
+                                                {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-1" />}
+                                                Reject
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                className="bg-green-600 hover:bg-green-700"
+                                                disabled={!!processingId}
+                                                onClick={() => handleWithdrawalAction(tx.id, 'approve')}
+                                            >
+                                                {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
+                                                Approve (Paid)
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
