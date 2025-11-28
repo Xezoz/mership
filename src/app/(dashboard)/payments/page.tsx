@@ -12,6 +12,7 @@ import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, T
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
 import { BalanceActionDialog } from '@/components/balance-action-dialog'
+import { PayoutDialog } from '@/components/payout-dialog'
 
 type Transaction = Database['public']['Tables']['transactions']['Row']
 
@@ -30,6 +31,7 @@ export default function PaymentsPage() {
     const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'ach' | 'bank' | null>(null)
     const [sendBalanceOpen, setSendBalanceOpen] = useState(false)
     const [deductBalanceOpen, setDeductBalanceOpen] = useState(false)
+    const [payoutDialogOpen, setPayoutDialogOpen] = useState(false)
     const [paymentDetails, setPaymentDetails] = useState({
         cryptoAddress: '',
         cryptoNetwork: '',
@@ -504,14 +506,14 @@ export default function PaymentsPage() {
                             <Button
                                 variant="outline"
                                 className="w-full justify-start h-auto py-4"
-                                onClick={() => toast.info('Payout feature coming soon')}
+                                onClick={() => setPayoutDialogOpen(true)}
                             >
                                 <div className="flex flex-col items-start gap-1">
                                     <span className="font-semibold flex items-center gap-2">
                                         <ArrowDownLeft className="h-4 w-4" />
-                                        Process Payout
+                                        Process Payouts
                                     </span>
-                                    <span className="text-xs text-muted-foreground">Send funds to reshippers</span>
+                                    <span className="text-xs text-muted-foreground">Review pending withdrawal requests</span>
                                 </div>
                             </Button>
                         </CardContent>
@@ -787,6 +789,11 @@ export default function PaymentsPage() {
                         open={deductBalanceOpen}
                         onOpenChange={setDeductBalanceOpen}
                         action="deduct"
+                        onSuccess={fetchData}
+                    />
+                    <PayoutDialog
+                        open={payoutDialogOpen}
+                        onOpenChange={setPayoutDialogOpen}
                         onSuccess={fetchData}
                     />
                 </>
