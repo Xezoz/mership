@@ -68,11 +68,14 @@ export default function ShipmentsPage() {
             const { data: shipmentsData, error: shipmentsError } = await query
 
             if (shipmentsError) {
-                console.error('Shipments error:', shipmentsError)
-                throw shipmentsError
+                console.error('Error fetching shipments:', shipmentsError)
+                toast.error('Failed to load shipments')
+                setLoading(false)
+                return
             }
 
-            // Fetch profiles for sender and recipient
+            // Fetch profiles for senders and recipients manually
+            let enrichedShipments: ShipmentWithProfiles[] = []
             if (shipmentsData && shipmentsData.length > 0) {
                 const userIds = new Set<string>()
                 shipmentsData.forEach(s => {
@@ -80,10 +83,14 @@ export default function ShipmentsPage() {
                     if (s.recipient_id) userIds.add(s.recipient_id)
                 })
 
-                const { data: profilesData } = await supabase
+                const { data: profilesData, error: profilesError } = await supabase
                     .from('profiles')
                     .select('id, full_name, email')
                     .in('id', Array.from(userIds))
+
+                if (profilesError) {
+                    console.error('Error fetching profiles:', profilesError)
+                }
 
                 const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || [])
 

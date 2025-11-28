@@ -196,18 +196,21 @@ export function PayoutDialog({ open, onOpenChange, onSuccess }: PayoutDialogProp
                                     </div>
                                 </div>
 
-                                {/* Payment Details */}
-                                {tx.description && (
-                                    <div className="bg-muted/50 p-3 rounded text-sm font-mono">
-                                        {tx.description}
-                                    </div>
-                                )}
+                                {/* Payment Details - Always show */}
+                                <div className="bg-muted/50 p-3 rounded text-sm space-y-1">
+                                    <div className="font-medium">Payment Information:</div>
+                                    {tx.description ? (
+                                        <div className="font-mono text-xs">{tx.description}</div>
+                                    ) : (
+                                        <div className="text-muted-foreground text-xs">No payment details provided</div>
+                                    )}
+                                </div>
 
                                 {/* Action Buttons */}
                                 <div className="flex items-center gap-2 pt-2">
                                     <Button
                                         size="sm"
-                                        variant="destructive"
+                                        variant="outline"
                                         disabled={!!processingId}
                                         onClick={() => handleWithdrawalAction(tx.id, 'reject')}
                                         className="flex-1"
@@ -223,9 +226,9 @@ export function PayoutDialog({ open, onOpenChange, onSuccess }: PayoutDialogProp
                                     </Button>
                                     <Button
                                         size="sm"
-                                        className="bg-green-600 hover:bg-green-700 flex-1"
                                         disabled={!!processingId}
                                         onClick={() => handleWithdrawalAction(tx.id, 'approve')}
+                                        className="flex-1"
                                     >
                                         {processingId === tx.id ? (
                                             <Loader2 className="h-4 w-4 animate-spin" />
