@@ -149,6 +149,7 @@ export type Database = {
             shipments: {
                 Row: {
                     created_at: string
+                    customer_action: string | null
                     delivery_address: string | null
                     destination: string | null
                     id: string
@@ -167,6 +168,7 @@ export type Database = {
                 }
                 Insert: {
                     created_at?: string
+                    customer_action?: string | null
                     delivery_address?: string | null
                     destination?: string | null
                     id?: string
@@ -185,6 +187,7 @@ export type Database = {
                 }
                 Update: {
                     created_at?: string
+                    customer_action?: string | null
                     delivery_address?: string | null
                     destination?: string | null
                     id?: string
