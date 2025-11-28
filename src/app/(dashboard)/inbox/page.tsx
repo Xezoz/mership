@@ -374,7 +374,6 @@ export default function InboxPage() {
                                         })}
                                     </>
                                 )}
-                                {conversations.length > 0 && <div className="px-4 py-2 text-xs font-semibold text-muted-foreground border-t mt-2">Your Conversations</div>}
                             </>
                         )}
 
@@ -388,7 +387,11 @@ export default function InboxPage() {
                                 if (isCustomer) {
                                     return conv.other_user?.role !== 'moderator' && conv.other_user?.role !== 'reshipper'
                                 }
-                                // For reshippers and moderators: show all conversations
+                                // For reshippers: exclude conversations with moderators (Support)
+                                if (isReshipper) {
+                                    return conv.other_user?.role !== 'moderator'
+                                }
+                                // For moderators: show all conversations
                                 return true
                             })
                             .map((conv) => (
