@@ -173,27 +173,29 @@ export default function InboxPage() {
                 .eq('conversation_id', selectedConversation.id)
                 .order('created_at', { ascending: true })
 
-            // Mark messages as read
-            if (selectedConversation.unread_count && selectedConversation.unread_count > 0) {
-                const { error: updateError } = await supabase
-                    .from('messages')
-                    .update({ read: true })
-                    .eq('conversation_id', selectedConversation.id)
-                    .neq('sender_id', currentUserId)
-                    .eq('read', false)
-
-                if (!updateError) {
-                    // Update local state to clear unread count
-                    setConversations(prev => prev.map(c =>
-                        c.id === selectedConversation.id ? { ...c, unread_count: 0 } : c
-                    ))
-                }
-            }
-
             if (error) {
                 console.error('Error fetching messages:', error)
             } else if (data) {
                 setMessages(data)
+
+                // Mark messages as read after loading them
+                if (currentUserId && selectedConversation.unread_count && selectedConversation.unread_count > 0) {
+                    const { error: updateError } = await supabase
+                        .from('messages')
+                        .update({ read: true })
+                        .eq('conversation_id', selectedConversation.id)
+                        .neq('sender_id', currentUserId)
+                        .eq('read', false)
+
+                    if (!updateError) {
+                        // Update local state to clear unread count
+                        setConversations(prev => prev.map(c =>
+                            c.id === selectedConversation.id ? { ...c, unread_count: 0 } : c
+                        ))
+                    } else {
+                        console.error('Error marking messages as read:', updateError)
+                    }
+                }
             }
         }
 
