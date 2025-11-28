@@ -298,7 +298,7 @@ export default function InboxPage() {
                                     >
                                         <Avatar>
                                             <AvatarImage src={reshipper.avatar_url || undefined} />
-                                            <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email[0].toUpperCase()}</AvatarFallback>
+                                            <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1 overflow-hidden">
                                             <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
@@ -330,6 +330,7 @@ export default function InboxPage() {
                                         <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
                                         <span className="text-xs text-muted-foreground">
                                             {(() => {
+                                                if (!conv.last_message_at) return 'No messages'
                                                 const date = new Date(conv.last_message_at)
                                                 const now = new Date()
                                                 const diffMs = now.getTime() - date.getTime()

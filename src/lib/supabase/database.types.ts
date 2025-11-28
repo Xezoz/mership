@@ -88,32 +88,59 @@ export type Database = {
             }
             profiles: {
                 Row: {
+                    about: string | null
+                    address_city: string | null
+                    address_country: string | null
+                    address_state: string | null
+                    address_street: string | null
+                    address_zip: string | null
+                    allowed_sites: string[] | null
                     avatar_url: string | null
                     balance: number
+                    banned_items: string[] | null
                     created_at: string
                     email: string | null
                     full_name: string | null
                     id: string
+                    is_verified: boolean | null
                     membership_tier: string | null
                     role: Database["public"]["Enums"]["user_role"]
                 }
                 Insert: {
+                    about?: string | null
+                    address_city?: string | null
+                    address_country?: string | null
+                    address_state?: string | null
+                    address_street?: string | null
+                    address_zip?: string | null
+                    allowed_sites?: string[] | null
                     avatar_url?: string | null
                     balance?: number
+                    banned_items?: string[] | null
                     created_at?: string
                     email?: string | null
                     full_name?: string | null
                     id: string
+                    is_verified?: boolean | null
                     membership_tier?: string | null
                     role?: Database["public"]["Enums"]["user_role"]
                 }
                 Update: {
+                    about?: string | null
+                    address_city?: string | null
+                    address_country?: string | null
+                    address_state?: string | null
+                    address_street?: string | null
+                    address_zip?: string | null
+                    allowed_sites?: string[] | null
                     avatar_url?: string | null
                     balance?: number
+                    banned_items?: string[] | null
                     created_at?: string
                     email?: string | null
                     full_name?: string | null
                     id?: string
+                    is_verified?: boolean | null
                     membership_tier?: string | null
                     role?: Database["public"]["Enums"]["user_role"]
                 }
