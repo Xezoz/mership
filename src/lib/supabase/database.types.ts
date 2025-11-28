@@ -150,8 +150,11 @@ export type Database = {
                 Row: {
                     created_at: string
                     delivery_address: string | null
+                    destination: string | null
                     id: string
                     item_description: string | null
+                    origin: string | null
+                    product_name: string | null
                     recipient_id: string | null
                     sender_id: string
                     shipping_carrier: string | null
@@ -164,8 +167,11 @@ export type Database = {
                 Insert: {
                     created_at?: string
                     delivery_address?: string | null
+                    destination?: string | null
                     id?: string
                     item_description?: string | null
+                    origin?: string | null
+                    product_name?: string | null
                     recipient_id?: string | null
                     sender_id: string
                     shipping_carrier?: string | null
@@ -178,8 +184,11 @@ export type Database = {
                 Update: {
                     created_at?: string
                     delivery_address?: string | null
+                    destination?: string | null
                     id?: string
                     item_description?: string | null
+                    origin?: string | null
+                    product_name?: string | null
                     recipient_id?: string | null
                     sender_id?: string
                     shipping_carrier?: string | null
