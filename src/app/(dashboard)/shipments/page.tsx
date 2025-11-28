@@ -54,6 +54,17 @@ export default function ShipmentsPage() {
                 return
             }
 
+            // Fetch user role directly to ensure accuracy
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single()
+
+            const isMod = profile?.role === 'moderator'
+
+            console.log('Fetching shipments for user:', user.id, 'Role:', profile?.role, 'isModerator:', isMod)
+
             // Fetch shipments - simplified query without joins
             let query = supabase
                 .from('shipments')
@@ -61,7 +72,7 @@ export default function ShipmentsPage() {
                 .order('created_at', { ascending: false })
 
             // Apply filters based on role
-            if (!isModerator) {
+            if (!isMod) {
                 query = query.or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
             }
 
@@ -69,10 +80,10 @@ export default function ShipmentsPage() {
 
             console.log('Shipments Query Debug:', {
                 user_id: user.id,
-                isModerator,
+                isModerator: isMod,
                 dataLength: shipmentsData?.length,
                 error: shipmentsError,
-                query: isModerator ? 'all' : 'filtered'
+                query: isMod ? 'all' : 'filtered'
             })
 
             if (shipmentsError) {
