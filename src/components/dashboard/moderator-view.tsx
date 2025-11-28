@@ -45,14 +45,38 @@ export function ModeratorDashboard() {
             if (revenueError) throw revenueError
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
-            // 2. Fetch All Transactions (Recent)
+            // 2. Fetch All Transactions (Recent) - without join to avoid FK issues
             const { data: withdrawalsData, error: withdrawalsError } = await supabase
                 .from('transactions')
-                .select('*, profiles(full_name, email)')
+                .select('*')
                 .order('created_at', { ascending: false })
                 .limit(50)
 
-            if (withdrawalsError) throw withdrawalsError
+            if (withdrawalsError) {
+                console.error('Transactions query error:', withdrawalsError)
+                throw withdrawalsError
+            }
+            console.log('Transactions data fetched:', withdrawalsData?.length, 'records')
+
+            // Fetch profiles for all user_ids in transactions
+            let enrichedWithdrawals: Transaction[] = []
+            if (withdrawalsData && withdrawalsData.length > 0) {
+                const userIds = [...new Set(withdrawalsData.map(tx => tx.user_id))]
+                const { data: profilesData, error: profilesError } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, email')
+                    .in('id', userIds)
+
+                if (profilesError) {
+                    console.error('Profiles query error:', profilesError)
+                }
+
+                const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || [])
+                enrichedWithdrawals = withdrawalsData.map(tx => ({
+                    ...tx,
+                    profiles: profilesMap.get(tx.user_id) || null
+                })) as Transaction[]
+            }
 
             // 3. Fetch Active Reshippers
             const { count: reshippersCount, error: reshippersError } = await supabase
@@ -60,20 +84,24 @@ export function ModeratorDashboard() {
                 .select('*', { count: 'exact', head: true })
                 .eq('role', 'reshipper')
 
-            if (reshippersError) throw reshippersError
+            if (reshippersError) {
+                console.error('Reshippers query error:', reshippersError)
+                throw reshippersError
+            }
+            console.log('Reshippers count:', reshippersCount)
 
             console.log('Moderator Dashboard Data:', {
                 totalRevenue,
-                withdrawalsCount: withdrawalsData?.length,
+                withdrawalsCount: enrichedWithdrawals?.length,
                 reshippersCount
             })
 
             setStats({
                 totalRevenue,
-                pendingWithdrawalsCount: withdrawalsData?.length || 0,
+                pendingWithdrawalsCount: enrichedWithdrawals?.length || 0,
                 activeReshippersCount: reshippersCount || 0
             })
-            setWithdrawals(withdrawalsData as Transaction[])
+            setWithdrawals(enrichedWithdrawals)
 
         } catch (error) {
             console.error('Error fetching moderator data:', error)
