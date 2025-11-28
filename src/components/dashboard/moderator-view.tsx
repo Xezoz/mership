@@ -46,13 +46,11 @@ export function ModeratorDashboard() {
             const totalRevenue = revenueData?.reduce((sum, tx) => sum + tx.amount, 0) || 0
 
             // 2. Fetch All Transactions (Recent) - without join to avoid FK issues
-            // Exclude pending withdrawals (those are shown in Payout dialog)
             const { data: withdrawalsData, error: withdrawalsError } = await supabase
                 .from('transactions')
                 .select('*')
-                .not('and', '(type.eq.withdrawal,status.eq.pending)')
                 .order('created_at', { ascending: false })
-                .limit(50)
+                .limit(100) // Fetch more to account for filtering
 
             if (withdrawalsError) {
                 console.error('Transactions query error:', withdrawalsError)
@@ -60,10 +58,15 @@ export function ModeratorDashboard() {
             }
             console.log('Transactions data fetched:', withdrawalsData?.length, 'records')
 
+            // Filter out pending withdrawals (those are shown in Payout dialog)
+            const filteredTransactions = withdrawalsData?.filter(tx =>
+                !(tx.type === 'withdrawal' && tx.status === 'pending')
+            ).slice(0, 50) || []
+
             // Fetch profiles for all user_ids in transactions
             let enrichedWithdrawals: Transaction[] = []
-            if (withdrawalsData && withdrawalsData.length > 0) {
-                const userIds = [...new Set(withdrawalsData.map(tx => tx.user_id))]
+            if (filteredTransactions && filteredTransactions.length > 0) {
+                const userIds = [...new Set(filteredTransactions.map(tx => tx.user_id))]
                 const { data: profilesData, error: profilesError } = await supabase
                     .from('profiles')
                     .select('id, full_name, email')
@@ -74,7 +77,7 @@ export function ModeratorDashboard() {
                 }
 
                 const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || [])
-                enrichedWithdrawals = withdrawalsData.map(tx => ({
+                enrichedWithdrawals = filteredTransactions.map(tx => ({
                     ...tx,
                     profiles: profilesMap.get(tx.user_id) || null
                 })) as Transaction[]
