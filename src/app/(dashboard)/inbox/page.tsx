@@ -87,7 +87,14 @@ export default function InboxPage() {
                     }
                 }))
 
-                setConversations(conversationsWithDetails)
+                // Sort by last message time (most recent first)
+                const sortedConversations = conversationsWithDetails.sort((a, b) => {
+                    const timeA = a.last_message_at ? new Date(a.last_message_at).getTime() : 0
+                    const timeB = b.last_message_at ? new Date(b.last_message_at).getTime() : 0
+                    return timeB - timeA // Most recent first
+                })
+
+                setConversations(sortedConversations)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
             } finally {
