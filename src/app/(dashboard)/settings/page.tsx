@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Save, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 export default function SettingsPage() {
     const supabase = createBrowserClient()
@@ -106,10 +107,10 @@ export default function SettingsPage() {
 
             if (error) throw error
 
-            alert('Profile updated successfully!')
+            toast.success('Profile updated successfully!')
         } catch (error) {
             console.error('Error updating profile:', error)
-            alert('Failed to update profile')
+            toast.error('Failed to update profile')
         } finally {
             setSaving(false)
         }
@@ -139,12 +140,12 @@ export default function SettingsPage() {
 
     const handlePasswordChange = async () => {
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            alert('New passwords do not match')
+            toast.error('New passwords do not match')
             return
         }
 
         if (passwordData.newPassword.length < 6) {
-            alert('Password must be at least 6 characters')
+            toast.error('Password must be at least 6 characters')
             return
         }
 
@@ -156,11 +157,11 @@ export default function SettingsPage() {
 
             if (error) throw error
 
-            alert('Password updated successfully!')
+            toast.success('Password updated successfully!')
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
         } catch (error) {
             console.error('Error updating password:', error)
-            alert('Failed to update password')
+            toast.error('Failed to update password')
         } finally {
             setChangingPassword(false)
         }
