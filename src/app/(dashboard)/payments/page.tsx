@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Loader2, DollarSign, ArrowUpRight, ArrowDownLeft, Wallet, TrendingUp, TrendingDown, Activity } from 'lucide-react'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
+import { BalanceActionDialog } from '@/components/balance-action-dialog'
 
 type Transaction = Database['public']['Tables']['transactions']['Row']
 
@@ -27,6 +28,8 @@ export default function PaymentsPage() {
     const [processing, setProcessing] = useState(false)
     const [withdrawalStep, setWithdrawalStep] = useState(1)
     const [paymentMethod, setPaymentMethod] = useState<'crypto' | 'ach' | 'bank' | null>(null)
+    const [sendBalanceOpen, setSendBalanceOpen] = useState(false)
+    const [deductBalanceOpen, setDeductBalanceOpen] = useState(false)
     const [paymentDetails, setPaymentDetails] = useState({
         cryptoAddress: '',
         cryptoNetwork: '',
@@ -475,7 +478,7 @@ export default function PaymentsPage() {
                             <Button
                                 variant="outline"
                                 className="w-full justify-start h-auto py-4"
-                                onClick={() => toast.info('Send Balance feature coming soon')}
+                                onClick={() => setSendBalanceOpen(true)}
                             >
                                 <div className="flex flex-col items-start gap-1">
                                     <span className="font-semibold flex items-center gap-2">
@@ -488,7 +491,7 @@ export default function PaymentsPage() {
                             <Button
                                 variant="outline"
                                 className="w-full justify-start h-auto py-4"
-                                onClick={() => toast.info('Deduct Balance feature coming soon')}
+                                onClick={() => setDeductBalanceOpen(true)}
                             >
                                 <div className="flex flex-col items-start gap-1">
                                     <span className="font-semibold flex items-center gap-2">
@@ -770,6 +773,24 @@ export default function PaymentsPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Balance Action Dialogs */}
+            {isModerator && (
+                <>
+                    <BalanceActionDialog
+                        open={sendBalanceOpen}
+                        onOpenChange={setSendBalanceOpen}
+                        action="send"
+                        onSuccess={fetchData}
+                    />
+                    <BalanceActionDialog
+                        open={deductBalanceOpen}
+                        onOpenChange={setDeductBalanceOpen}
+                        action="deduct"
+                        onSuccess={fetchData}
+                    />
+                </>
+            )}
         </div>
     )
 }

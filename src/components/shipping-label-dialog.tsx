@@ -178,6 +178,45 @@ export function ShippingLabelDialog({
                 console.log('No reshipper found for this shipment')
             }
 
+            // Credit moderator with platform revenue ($19.99 - $10 reshipper - $0.90 Whop fees = $9.09)
+            const MODERATOR_SHARE = 9.09
+            const { data: moderatorProfile, error: modError } = await supabase
+                .from('profiles')
+                .select('id, balance')
+                .eq('role', 'moderator')
+                .limit(1)
+                .single()
+
+            if (!modError && moderatorProfile) {
+                console.log('Processing platform revenue for moderator:', moderatorProfile.id)
+
+                // Credit moderator balance
+                const { error: modBalanceError } = await supabase
+                    .from('profiles')
+                    .update({ balance: moderatorProfile.balance + MODERATOR_SHARE })
+                    .eq('id', moderatorProfile.id)
+
+                if (modBalanceError) {
+                    console.error('Error updating moderator balance:', modBalanceError)
+                } else {
+                    console.log('Successfully credited moderator with $', MODERATOR_SHARE)
+
+                    // Create transaction record for moderator
+                    await supabase
+                        .from('transactions')
+                        .insert({
+                            user_id: moderatorProfile.id,
+                            type: 'deposit',
+                            amount: MODERATOR_SHARE,
+                            status: 'completed',
+                            payment_method: 'platform',
+                            description: `Platform revenue from package ${trackingNumber} ($19.99 - $10 reshipper - $0.90 fees)`
+                        })
+                }
+            } else {
+                console.log('No moderator account found for revenue distribution')
+            }
+
             // Create notification for customer
             await supabase
                 .from('notifications')

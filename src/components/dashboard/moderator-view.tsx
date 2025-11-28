@@ -165,7 +165,7 @@ export function ModeratorDashboard() {
                 />
                 <StatsCard
                     title="Pending Withdrawals"
-                    value={stats.pendingWithdrawalsCount}
+                    value={withdrawals.filter(tx => tx.type === 'withdrawal' && tx.status === 'pending').length}
                     change={0}
                     changeLabel="Requests"
                     description="Awaiting approval"
@@ -192,7 +192,7 @@ export function ModeratorDashboard() {
                 <CardContent>
                     {withdrawals.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
-                            No pending withdrawals
+                            No transactions yet
                         </div>
                     ) : (
                         <div className="space-y-4">
