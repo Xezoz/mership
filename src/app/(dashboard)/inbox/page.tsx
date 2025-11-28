@@ -81,32 +81,13 @@ export default function InboxPage() {
                         .eq('id', otherUserId)
                         .single()
 
-                    // Calculate unread count - use select instead of head because neq doesn't work with head
-                    const { data: unreadMessages, error: countError } = await supabase
-                        .from('messages')
-                        .select('id')
-                        .eq('conversation_id', conv.id)
-                        .eq('read', false)
-                        .neq('sender_id', user.id)
-
-                    const unreadCount = unreadMessages?.length || 0
-                    console.log(`Conv ${conv.id.slice(0, 8)}: unread=${unreadCount}, error:`, countError)
-
                     return {
                         ...conv,
-                        other_user: profile || { id: otherUserId, email: 'Unknown', full_name: 'Unknown User', avatar_url: null, role: 'customer' as const, created_at: '', updated_at: '' },
-                        unread_count: unreadCount
+                        other_user: profile || { id: otherUserId, email: 'Unknown', full_name: 'Unknown User', avatar_url: null, role: 'customer' as const, created_at: '', updated_at: '' }
                     }
                 }))
 
-                // Sort: Unread first, then by date
-                const sortedConversations = conversationsWithDetails.sort((a, b) => {
-                    if ((a.unread_count || 0) > 0 && (b.unread_count || 0) === 0) return -1
-                    if ((a.unread_count || 0) === 0 && (b.unread_count || 0) > 0) return 1
-                    return new Date(b.last_message_at || 0).getTime() - new Date(a.last_message_at || 0).getTime()
-                })
-
-                setConversations(sortedConversations)
+                setConversations(conversationsWithDetails)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
             } finally {
@@ -177,25 +158,6 @@ export default function InboxPage() {
                 console.error('Error fetching messages:', error)
             } else if (data) {
                 setMessages(data)
-
-                // Mark messages as read after loading them
-                if (currentUserId && selectedConversation.unread_count && selectedConversation.unread_count > 0) {
-                    const { error: updateError } = await supabase
-                        .from('messages')
-                        .update({ read: true })
-                        .eq('conversation_id', selectedConversation.id)
-                        .neq('sender_id', currentUserId)
-                        .eq('read', false)
-
-                    if (!updateError) {
-                        // Update local state to clear unread count
-                        setConversations(prev => prev.map(c =>
-                            c.id === selectedConversation.id ? { ...c, unread_count: 0 } : c
-                        ))
-                    } else {
-                        console.error('Error marking messages as read:', updateError)
-                    }
-                }
             }
         }
 
@@ -408,30 +370,23 @@ export default function InboxPage() {
                                 <div className="flex-1 overflow-hidden">
                                     <div className="flex items-center justify-between">
                                         <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
-                                        <div className="flex flex-col items-end gap-1">
-                                            <span className="text-xs text-muted-foreground">
-                                                {(() => {
-                                                    if (!conv.last_message_at) return 'No messages'
-                                                    const date = new Date(conv.last_message_at)
-                                                    const now = new Date()
-                                                    const diffMs = now.getTime() - date.getTime()
-                                                    const diffMins = Math.floor(diffMs / 60000)
-                                                    const diffHours = Math.floor(diffMs / 3600000)
-                                                    const diffDays = Math.floor(diffMs / 86400000)
+                                        <span className="text-xs text-muted-foreground">
+                                            {(() => {
+                                                if (!conv.last_message_at) return 'No messages'
+                                                const date = new Date(conv.last_message_at)
+                                                const now = new Date()
+                                                const diffMs = now.getTime() - date.getTime()
+                                                const diffMins = Math.floor(diffMs / 60000)
+                                                const diffHours = Math.floor(diffMs / 3600000)
+                                                const diffDays = Math.floor(diffMs / 86400000)
 
-                                                    if (diffMins < 1) return 'Just now'
-                                                    if (diffMins < 60) return `${diffMins}m ago`
-                                                    if (diffHours < 24) return `${diffHours}h ago`
-                                                    if (diffDays < 7) return `${diffDays}d ago`
-                                                    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
-                                                })()}
-                                            </span>
-                                            {conv.unread_count && conv.unread_count > 0 ? (
-                                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
-                                                    {conv.unread_count}
-                                                </span>
-                                            ) : null}
-                                        </div>
+                                                if (diffMins < 1) return 'Just now'
+                                                if (diffMins < 60) return `${diffMins}m ago`
+                                                if (diffHours < 24) return `${diffHours}h ago`
+                                                if (diffDays < 7) return `${diffDays}d ago`
+                                                return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+                                            })()}
+                                        </span>
                                     </div>
                                     <p className="truncate text-sm text-muted-foreground">
                                         {conv.last_message || 'No messages yet'}
