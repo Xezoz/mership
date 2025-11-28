@@ -104,6 +104,18 @@ export default function InboxPage() {
                 })
                 const uniqueConversations = Array.from(uniqueConversationsMap.values())
 
+                console.log('Inbox Debug:', {
+                    role,
+                    isModerator,
+                    totalConvs: uniqueConversations.length,
+                    convs: uniqueConversations.map(c => ({
+                        id: c.id,
+                        other_user_id: c.other_user?.id,
+                        other_user_role: c.other_user?.role,
+                        other_user_name: c.other_user?.full_name
+                    }))
+                })
+
                 setConversations(uniqueConversations)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
