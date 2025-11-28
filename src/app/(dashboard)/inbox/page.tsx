@@ -158,6 +158,12 @@ export default function InboxPage() {
             if (error) {
                 console.error('Error fetching available users:', error)
             } else if (data) {
+                console.log('Available Users Debug:', {
+                    isModerator,
+                    isReshipper,
+                    isCustomer,
+                    fetchedUsers: data.map(u => ({ id: u.id, name: u.full_name, role: u.role }))
+                })
                 setReshippers(data.filter(p => p.role === 'reshipper'))
                 setModerators(data.filter(p => p.role === 'moderator'))
             }
