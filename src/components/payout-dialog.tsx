@@ -37,15 +37,34 @@ export function PayoutDialog({ open, onOpenChange, onSuccess }: PayoutDialogProp
     const fetchWithdrawals = async () => {
         setLoading(true)
         try {
+            // Fetch pending withdrawals without join
             const { data, error } = await supabase
                 .from('transactions')
-                .select('*, profiles(full_name, email)')
+                .select('*')
                 .eq('type', 'withdrawal')
                 .eq('status', 'pending')
                 .order('created_at', { ascending: true })
 
             if (error) throw error
-            setWithdrawals(data as Transaction[])
+
+            // Fetch profiles for all user_ids
+            if (data && data.length > 0) {
+                const userIds = [...new Set(data.map(tx => tx.user_id))]
+                const { data: profilesData } = await supabase
+                    .from('profiles')
+                    .select('id, full_name, email')
+                    .in('id', userIds)
+
+                const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || [])
+                const enrichedData = data.map(tx => ({
+                    ...tx,
+                    profiles: profilesMap.get(tx.user_id) || null
+                })) as Transaction[]
+
+                setWithdrawals(enrichedData)
+            } else {
+                setWithdrawals([])
+            }
         } catch (error) {
             console.error('Error fetching withdrawals:', error)
             toast.error('Failed to load withdrawal requests')
