@@ -250,8 +250,8 @@ export default function ShipmentsPage() {
     const filteredShipments = shipments.filter((shipment) =>
         shipment.tracking_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
         shipment.product_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        shipment.origin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        shipment.destination.toLowerCase().includes(searchQuery.toLowerCase())
+        shipment.origin?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        shipment.destination?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     const stats = {
