@@ -34,7 +34,7 @@ export function useUserRole() {
         }
 
         fetchRole()
-    }, [supabase])
+    }, [])
 
     return { role, loading, isReshipper: role === 'reshipper', isCustomer: role === 'customer', isModerator: (role as any) === 'moderator' }
 }
