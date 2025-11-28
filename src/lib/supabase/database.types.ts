@@ -155,6 +155,7 @@ export type Database = {
                     item_description: string | null
                     origin: string | null
                     product_name: string | null
+                    product_value: number | null
                     recipient_id: string | null
                     sender_id: string
                     shipping_carrier: string | null
@@ -172,6 +173,7 @@ export type Database = {
                     item_description?: string | null
                     origin?: string | null
                     product_name?: string | null
+                    product_value?: number | null
                     recipient_id?: string | null
                     sender_id: string
                     shipping_carrier?: string | null
@@ -189,6 +191,7 @@ export type Database = {
                     item_description?: string | null
                     origin?: string | null
                     product_name?: string | null
+                    product_value?: number | null
                     recipient_id?: string | null
                     sender_id?: string
                     shipping_carrier?: string | null
