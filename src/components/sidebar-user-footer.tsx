@@ -5,7 +5,7 @@ import { createBrowserClient } from '@/lib/supabase/client'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Settings, Sparkles } from 'lucide-react'
+import { Settings } from 'lucide-react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -56,7 +56,7 @@ export function SidebarUserFooter() {
         }
 
         fetchProfile()
-    }, [])
+    }, [supabase])
 
     if (loading) {
         return (

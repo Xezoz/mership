@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@/lib/supabase/client'
 import { StatsCard } from '@/components/stats-card'
-import { DollarSign, Users, ArrowUpRight, ArrowDownLeft, Clock, Loader2, Package, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { DollarSign, Users, Loader2, Package, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -338,7 +338,7 @@ export function ModeratorDashboard() {
             <Card>
                 <CardHeader>
                     <CardTitle>Recent Transactions</CardTitle>
-                    <CardDescription>View all platform transactions.</CardDescription>
+                    <CardDescription>Welcome back! Here&apos;s an overview of the platform status.actions.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {withdrawals.length === 0 ? (

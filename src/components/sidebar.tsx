@@ -4,16 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useUserRole } from '@/hooks/use-user-role'
-import {
-    LayoutDashboard,
-    Package,
-    MessageSquare,
-    CreditCard,
-    Truck,
-    Users,
-    Menu,
-    X
-} from 'lucide-react'
+import { Menu, Package, MessageSquare, CreditCard, Truck, Users, LayoutDashboard } from 'lucide-react'
 import { SidebarUserFooter } from '@/components/sidebar-user-footer'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -33,29 +24,7 @@ export function Sidebar() {
         ...(isCustomer ? [{ name: 'Reshippers', href: '/reshippers', icon: Users }] : []),
     ]
 
-    const NavLinks = () => (
-        <>
-            {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                    <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => setMobileOpen(false)}
-                        className={cn(
-                            'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                            isActive
-                                ? 'bg-secondary text-secondary-foreground'
-                                : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-                        )}
-                    >
-                        <item.icon className="h-5 w-5" />
-                        {item.name}
-                    </Link>
-                )
-            })}
-        </>
-    )
+
 
     if (loading) return <div className="hidden md:block w-64 bg-card border-r" />
 
@@ -92,7 +61,25 @@ export function Sidebar() {
                             {/* Navigation */}
                             <nav className="flex-1 space-y-1 px-3 py-4">
                                 <div className="space-y-1">
-                                    <NavLinks />
+                                    {navigation.map((item) => {
+                                        const isActive = pathname === item.href
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={item.href}
+                                                onClick={() => setMobileOpen(false)}
+                                                className={cn(
+                                                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                                    isActive
+                                                        ? 'bg-secondary text-secondary-foreground'
+                                                        : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                                                )}
+                                            >
+                                                <item.icon className="h-5 w-5" />
+                                                {item.name}
+                                            </Link>
+                                        )
+                                    })}
                                 </div>
                             </nav>
 
@@ -118,7 +105,25 @@ export function Sidebar() {
                 {/* Navigation */}
                 <nav className="flex-1 space-y-1 px-3 py-4">
                     <div className="space-y-1">
-                        <NavLinks />
+                        {navigation.map((item) => {
+                            const isActive = pathname === item.href
+                            return (
+                                <Link
+                                    key={item.name}
+                                    href={item.href}
+                                    onClick={() => setMobileOpen(false)}
+                                    className={cn(
+                                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                        isActive
+                                            ? 'bg-secondary text-secondary-foreground'
+                                            : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                                    )}
+                                >
+                                    <item.icon className="h-5 w-5" />
+                                    {item.name}
+                                </Link>
+                            )
+                        })}
                     </div>
                 </nav>
 

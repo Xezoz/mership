@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Upload } from 'lucide-react'
+import { Download, Loader2, Printer } from 'lucide-react'
 import { toast } from 'sonner'
 
 type ShippingLabelDialogProps = {
