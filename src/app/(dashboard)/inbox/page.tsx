@@ -310,26 +310,35 @@ export default function InboxPage() {
                                 {moderators.length > 0 && (
                                     <>
                                         <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">Support Team</div>
-                                        {moderators.map((mod) => (
-                                            <button
-                                                key={mod.id}
-                                                onClick={() => handleStartConversation(mod)}
-                                                className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
-                                            >
-                                                <Avatar>
-                                                    <AvatarImage src={mod.avatar_url || undefined} />
-                                                    <AvatarFallback>{mod.full_name?.[0] || 'S'}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 overflow-hidden">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
-                                                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                                        {moderators.map((mod) => {
+                                            // Find existing conversation with this moderator
+                                            const existingConv = conversations.find(c =>
+                                                c.customer_id === mod.id || c.reshipper_id === mod.id
+                                            )
+
+                                            return (
+                                                <button
+                                                    key={mod.id}
+                                                    onClick={() => handleStartConversation(mod)}
+                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                                >
+                                                    <Avatar>
+                                                        <AvatarImage src={mod.avatar_url || undefined} />
+                                                        <AvatarFallback>{mod.full_name?.[0] || 'S'}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 overflow-hidden">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
+                                                            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground truncate">
+                                                            {existingConv?.last_message || 'Start a conversation'}
+                                                        </p>
                                                     </div>
-                                                    <p className="text-xs text-muted-foreground">Click to start conversation</p>
-                                                </div>
-                                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                            </button>
-                                        ))}
+                                                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                                </button>
+                                            )
+                                        })}
                                     </>
                                 )}
 
@@ -337,23 +346,32 @@ export default function InboxPage() {
                                 {reshippers.length > 0 && (
                                     <>
                                         <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Available Reshippers</div>
-                                        {reshippers.map((reshipper) => (
-                                            <button
-                                                key={reshipper.id}
-                                                onClick={() => handleStartConversation(reshipper)}
-                                                className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
-                                            >
-                                                <Avatar>
-                                                    <AvatarImage src={reshipper.avatar_url || undefined} />
-                                                    <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 overflow-hidden">
-                                                    <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
-                                                    <p className="text-xs text-muted-foreground">Click to start conversation</p>
-                                                </div>
-                                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                            </button>
-                                        ))}
+                                        {reshippers.map((reshipper) => {
+                                            // Find existing conversation with this reshipper
+                                            const existingConv = conversations.find(c =>
+                                                c.customer_id === reshipper.id || c.reshipper_id === reshipper.id
+                                            )
+
+                                            return (
+                                                <button
+                                                    key={reshipper.id}
+                                                    onClick={() => handleStartConversation(reshipper)}
+                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                                >
+                                                    <Avatar>
+                                                        <AvatarImage src={reshipper.avatar_url || undefined} />
+                                                        <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 overflow-hidden">
+                                                        <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
+                                                        <p className="text-xs text-muted-foreground truncate">
+                                                            {existingConv?.last_message || 'Start a conversation'}
+                                                        </p>
+                                                    </div>
+                                                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                                </button>
+                                            )
+                                        })}
                                     </>
                                 )}
                                 {conversations.length > 0 && <div className="px-4 py-2 text-xs font-semibold text-muted-foreground border-t mt-2">Your Conversations</div>}
