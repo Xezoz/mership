@@ -320,85 +320,85 @@ export function ModeratorDashboard() {
                 />
             </div>
 
-        </div>
 
-            {/* Charts and Top Reshippers */ }
-    <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
-        <div className="col-span-4">
-            <ModeratorCharts
-                data={chartData}
-                timeRange={timeRange}
-                onTimeRangeChange={setTimeRange}
-            />
-        </div>
-        <TopReshippersCard reshippers={topReshippers} />
-    </div>
 
-    {/* All Transactions Table */ }
-    <Card>
-        <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>View all platform transactions.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            {withdrawals.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                    No transactions yet
+            {/* Charts and Top Reshippers */}
+            <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-7">
+                <div className="col-span-4">
+                    <ModeratorCharts
+                        data={chartData}
+                        timeRange={timeRange}
+                        onTimeRangeChange={setTimeRange}
+                    />
                 </div>
-            ) : (
-                <div className="space-y-4">
-                    {withdrawals.map((tx) => (
-                        <div key={tx.id} className="flex flex-col md:flex-row md:items-center justify-between border rounded-lg p-4 gap-4">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-lg">
-                                        {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
-                                    </span>
-                                    <Badge variant="outline" className="capitalize">{tx.status}</Badge>
-                                    <Badge variant="secondary" className="capitalize">{tx.type}</Badge>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                    User: <span className="font-medium text-foreground">{tx.profiles?.full_name || 'Unknown User'}</span> ({tx.profiles?.email})
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    {new Date(tx.created_at).toLocaleString()}
-                                </div>
-                                {/* Payment Details from Description */}
-                                {tx.description && (
-                                    <div className="mt-2 bg-muted/50 p-2 rounded text-sm font-mono">
-                                        {tx.description}
-                                    </div>
-                                )}
-                            </div>
+                <TopReshippersCard reshippers={topReshippers} />
+            </div>
 
-                            {tx.type === 'withdrawal' && tx.status === 'pending' && (
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        size="sm"
-                                        variant="destructive"
-                                        disabled={!!processingId}
-                                        onClick={() => handleWithdrawalAction(tx.id, 'reject')}
-                                    >
-                                        {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-1" />}
-                                        Reject
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        className="bg-green-600 hover:bg-green-700"
-                                        disabled={!!processingId}
-                                        onClick={() => handleWithdrawalAction(tx.id, 'approve')}
-                                    >
-                                        {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
-                                        Approve (Paid)
-                                    </Button>
-                                </div>
-                            )}
+            {/* All Transactions Table */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Recent Transactions</CardTitle>
+                    <CardDescription>View all platform transactions.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {withdrawals.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            No transactions yet
                         </div>
-                    ))}
-                </div>
-            )}
-        </CardContent>
-    </Card>
+                    ) : (
+                        <div className="space-y-4">
+                            {withdrawals.map((tx) => (
+                                <div key={tx.id} className="flex flex-col md:flex-row md:items-center justify-between border rounded-lg p-4 gap-4">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-lg">
+                                                {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
+                                            </span>
+                                            <Badge variant="outline" className="capitalize">{tx.status}</Badge>
+                                            <Badge variant="secondary" className="capitalize">{tx.type}</Badge>
+                                        </div>
+                                        <div className="text-sm text-muted-foreground">
+                                            User: <span className="font-medium text-foreground">{tx.profiles?.full_name || 'Unknown User'}</span> ({tx.profiles?.email})
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {new Date(tx.created_at).toLocaleString()}
+                                        </div>
+                                        {/* Payment Details from Description */}
+                                        {tx.description && (
+                                            <div className="mt-2 bg-muted/50 p-2 rounded text-sm font-mono">
+                                                {tx.description}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {tx.type === 'withdrawal' && tx.status === 'pending' && (
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                disabled={!!processingId}
+                                                onClick={() => handleWithdrawalAction(tx.id, 'reject')}
+                                            >
+                                                {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4 mr-1" />}
+                                                Reject
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                className="bg-green-600 hover:bg-green-700"
+                                                disabled={!!processingId}
+                                                onClick={() => handleWithdrawalAction(tx.id, 'approve')}
+                                            >
+                                                {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
+                                                Approve (Paid)
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div >
     )
 }
