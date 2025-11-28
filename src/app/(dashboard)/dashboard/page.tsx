@@ -6,6 +6,7 @@ import { useUserRole } from '@/hooks/use-user-role'
 import { StatsCard } from '@/components/stats-card'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Package, TrendingUp, Clock, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { ModeratorDashboard } from '@/components/dashboard/moderator-view'
 import { DashboardCharts } from '@/components/dashboard-charts'
 import { Database } from '@/lib/supabase/database.types'
 import { toast } from 'sonner'
@@ -43,7 +44,12 @@ type DashboardStats = {
 
 export default function DashboardPage() {
     const supabase = createBrowserClient()
-    const { isCustomer, isReshipper } = useUserRole()
+    const { isCustomer, isReshipper, isModerator } = useUserRole()
+
+    if (isModerator) {
+        return <ModeratorDashboard />
+    }
+
     const [loading, setLoading] = useState(true)
     const [stats, setStats] = useState<DashboardStats>({
         balance: 0,
