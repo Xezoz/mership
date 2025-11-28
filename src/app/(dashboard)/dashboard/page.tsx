@@ -88,6 +88,10 @@ export default function DashboardPage() {
         )
     }
 
+    if (isModerator) {
+        return <ModeratorDashboard />
+    }
+
     const fetchDashboardData = async () => {
         try {
             const { data: { user } } = await supabase.auth.getUser()

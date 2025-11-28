@@ -94,8 +94,15 @@ export default function InboxPage() {
                     return timeB - timeA // Most recent first
                 })
 
-                // Deduplicate conversations based on ID
-                const uniqueConversations = Array.from(new Map(sortedConversations.map(c => [c.id, c])).values())
+                // Deduplicate conversations based on other_user.id to ensure one convo per user
+                const uniqueConversationsMap = new Map()
+                sortedConversations.forEach(conv => {
+                    const otherId = conv.other_user?.id
+                    if (otherId && !uniqueConversationsMap.has(otherId)) {
+                        uniqueConversationsMap.set(otherId, conv)
+                    }
+                })
+                const uniqueConversations = Array.from(uniqueConversationsMap.values())
 
                 setConversations(uniqueConversations)
             } catch (error) {
