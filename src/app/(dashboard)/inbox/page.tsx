@@ -155,7 +155,13 @@ export default function InboxPage() {
 
     // Fetch Messages for Selected Conversation
     useEffect(() => {
-        if (!selectedConversation) return
+        if (!selectedConversation) {
+            setMessages([])
+            return
+        }
+
+        // Clear messages when switching conversations
+        setMessages([])
 
         const fetchMessages = async () => {
             const { data, error } = await supabase
@@ -184,17 +190,7 @@ export default function InboxPage() {
             if (error) {
                 console.error('Error fetching messages:', error)
             } else if (data) {
-                setMessages((prev) => {
-                    // Create a map of existing message IDs
-                    const existingIds = new Set(prev.map(msg => msg.id))
-                    // Only add new messages that don't exist
-                    const newMessages = data.filter(msg => !existingIds.has(msg.id))
-                    // If there are new messages, add them
-                    if (newMessages.length > 0) {
-                        return [...prev, ...newMessages]
-                    }
-                    return prev
-                })
+                setMessages(data)
             }
         }
 
@@ -353,10 +349,7 @@ export default function InboxPage() {
                                                 <div className="flex-1 overflow-hidden">
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
-                                                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80">
-                                                            <Shield className="h-3 w-3 mr-1" />
-                                                            Support
-                                                        </span>
+                                                        <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">Click to start conversation</p>
                                                 </div>
@@ -429,7 +422,7 @@ export default function InboxPage() {
                                                 })()}
                                             </span>
                                             {conv.unread_count && conv.unread_count > 0 ? (
-                                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-medium text-white">
+                                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
                                                     {conv.unread_count}
                                                 </span>
                                             ) : null}
