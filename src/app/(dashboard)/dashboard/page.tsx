@@ -46,18 +46,6 @@ export default function DashboardPage() {
     const supabase = createBrowserClient()
     const { isCustomer, isReshipper, isModerator, loading: roleLoading } = useUserRole()
 
-    if (roleLoading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-        )
-    }
-
-    if (isModerator) {
-        return <ModeratorDashboard />
-    }
-
     const [loading, setLoading] = useState(true)
     const [stats, setStats] = useState<DashboardStats>({
         balance: 0,
@@ -75,8 +63,22 @@ export default function DashboardPage() {
     })
 
     useEffect(() => {
-        fetchDashboardData()
-    }, [])
+        if (!roleLoading && !isModerator) {
+            fetchDashboardData()
+        }
+    }, [roleLoading, isModerator])
+
+    if (roleLoading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        )
+    }
+
+    if (isModerator) {
+        return <ModeratorDashboard />
+    }
 
     const fetchDashboardData = async () => {
         try {
