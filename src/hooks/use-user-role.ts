@@ -46,5 +46,5 @@ export function useUserRole() {
         fetchRole()
     }, [])
 
-    return { role, loading, isReshipper: role === 'reshipper', isCustomer: role === 'customer', isModerator: (role as any) === 'moderator' }
+    return { role, loading, isReshipper: role === 'reshipper', isCustomer: role === 'customer', isModerator: role === 'moderator' }
 }

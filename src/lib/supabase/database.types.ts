@@ -6,369 +6,213 @@ export type Json =
     | { [key: string]: Json | undefined }
     | Json[]
 
-export interface Database {
+export type Database = {
     public: {
         Tables: {
-            profiles: {
+            messages: {
                 Row: {
-                    id: string
-                    email: string
-                    full_name: string | null
-                    avatar_url: string | null
-                    role: 'customer' | 'reshipper'
-                    about: string | null
-                    address_street: string | null
-                    address_city: string | null
-                    address_state: string | null
-                    address_zip: string | null
-                    address_country: string | null
-                    allowed_sites: string[] | null
-                    banned_items: string[] | null
-                    is_verified: boolean
-                    rating: number
-                    review_count: number
-                    total_shipments: number
-                    balance: number
+                    content: string
                     created_at: string
-                    updated_at: string
-                    membership_tier: string
-                }
-                Insert: {
                     id: string
-                    email: string
-                    full_name?: string | null
-                    avatar_url?: string | null
-                    role?: 'customer' | 'reshipper'
-                    about?: string | null
-                    address_street?: string | null
-                    address_city?: string | null
-                    address_state?: string | null
-                    address_zip?: string | null
-                    address_country?: string | null
-                    allowed_sites?: string[] | null
-                    banned_items?: string[] | null
-                    is_verified?: boolean
-                    rating?: number
-                    review_count?: number
-                    total_shipments?: number
-                    balance?: number
-                    membership_tier?: string
-                    created_at?: string
-                    updated_at?: string
-                }
-                Update: {
-                    id?: string
-                    email?: string
-                    full_name?: string | null
-                    avatar_url?: string | null
-                    role?: 'customer' | 'reshipper'
-                    about?: string | null
-                    address_street?: string | null
-                    address_city?: string | null
-                    address_state?: string | null
-                    address_zip?: string | null
-                    address_country?: string | null
-                    allowed_sites?: string[] | null
-                    banned_items?: string[] | null
-                    is_verified?: boolean
-                    rating?: number
-                    review_count?: number
-                    total_shipments?: number
-                    balance?: number
-                    membership_tier?: string
-                    created_at?: string
-                    updated_at?: string
-                }
-            }
-            inventory: {
-                Row: {
-                    id: string
-                    user_id: string
-                    name: string
-                    description: string | null
-                    sku: string
-                    quantity: number
-                    price: number
-                    category: string | null
-                    status: 'in_stock' | 'low_stock' | 'out_of_stock'
-                    image_url: string | null
-                    created_at: string
-                    updated_at: string
-                }
-                Insert: {
-                    id?: string
-                    user_id: string
-                    name: string
-                    description?: string | null
-                    sku: string
-                    quantity: number
-                    price: number
-                    category?: string | null
-                    status?: 'in_stock' | 'low_stock' | 'out_of_stock'
-                    image_url?: string | null
-                    created_at?: string
-                    updated_at?: string
-                }
-                Update: {
-                    id?: string
-                    user_id?: string
-                    name?: string
-                    description?: string | null
-                    sku?: string
-                    quantity?: number
-                    price?: number
-                    category?: string | null
-                    status?: 'in_stock' | 'low_stock' | 'out_of_stock'
-                    image_url?: string | null
-                    created_at?: string
-                    updated_at?: string
-                }
-            }
-            packages: {
-                Row: {
-                    id: string
-                    user_id: string
-                    tracking_id: string
-                    sender: string | null
-                    arrived_at: string
-                    weight: string | null
-                    dimensions: string | null
-                    status: 'received' | 'processing' | 'ready_to_ship' | 'shipped'
-                    has_photos: boolean
-                    image_urls: string[] | null
-                    created_at: string
-                    updated_at: string
-                }
-                Insert: {
-                    id?: string
-                    user_id: string
-                    tracking_id: string
-                    sender?: string | null
-                    arrived_at?: string
-                    weight?: string | null
-                    dimensions?: string | null
-                    status?: 'received' | 'processing' | 'ready_to_ship' | 'shipped'
-                    has_photos?: boolean
-                    image_urls?: string[] | null
-                    created_at?: string
-                    updated_at?: string
-                }
-                Update: {
-                    id?: string
-                    user_id?: string
-                    tracking_id?: string
-                    sender?: string | null
-                    arrived_at?: string
-                    weight?: string | null
-                    dimensions?: string | null
-                    status?: 'received' | 'processing' | 'ready_to_ship' | 'shipped'
-                    has_photos?: boolean
-                    image_urls?: string[] | null
-                    created_at?: string
-                    updated_at?: string
-                }
-            }
-            shipments: {
-                Row: {
-                    id: string
-                    sender_id: string
+                    read: boolean
                     recipient_id: string
-                    tracking_number: string
-                    status: 'pending' | 'received' | 'in_transit' | 'delivered' | 'cancelled' | 'returned' | 'discarded'
-                    customer_action: 'ship' | 'return' | 'discard' | null
-                    handling_fee: number
-                    action_taken_at: string | null
-                    origin: string
-                    destination: string
-                    weight: number
-                    cost: number
-                    product_name: string | null
-                    product_description: string | null
-                    product_value: number | null
-                    notes: string | null
-                    shipping_label_url: string | null
-                    shipping_carrier: string | null
-                    shipping_service: string | null
-                    shipping_instructions: string | null
-                    outbound_tracking_number: string | null
-                    created_at: string
-                    updated_at: string
+                    sender_id: string
                 }
                 Insert: {
-                    id?: string
-                    sender_id: string
-                    recipient_id: string
-                    tracking_number: string
-                    status?: 'pending' | 'received' | 'in_transit' | 'delivered' | 'cancelled' | 'returned' | 'discarded'
-                    customer_action?: 'ship' | 'return' | 'discard' | null
-                    handling_fee?: number
-                    action_taken_at?: string | null
-                    origin: string
-                    destination: string
-                    weight?: number
-                    cost?: number
-                    product_name?: string | null
-                    product_description?: string | null
-                    product_value?: number | null
-                    notes?: string | null
-                    shipping_label_url?: string | null
-                    shipping_carrier?: string | null
-                    shipping_service?: string | null
-                    shipping_instructions?: string | null
-                    outbound_tracking_number?: string | null
+                    content: string
                     created_at?: string
-                    updated_at?: string
+                    id?: string
+                    read?: boolean
+                    recipient_id: string
+                    sender_id: string
                 }
                 Update: {
+                    content?: string
+                    created_at?: string
                     id?: string
-                    sender_id?: string
+                    read?: boolean
                     recipient_id?: string
-                    tracking_number?: string
-                    status?: 'pending' | 'received' | 'in_transit' | 'delivered' | 'cancelled' | 'returned' | 'discarded'
-                    customer_action?: 'ship' | 'return' | 'discard' | null
-                    handling_fee?: number
-                    action_taken_at?: string | null
-                    origin?: string
-                    destination?: string
-                    weight?: number
-                    cost?: number
-                    product_name?: string | null
-                    product_description?: string | null
-                    product_value?: number | null
-                    notes?: string | null
-                    shipping_label_url?: string | null
-                    shipping_carrier?: string | null
-                    shipping_service?: string | null
-                    shipping_instructions?: string | null
-                    outbound_tracking_number?: string | null
-                    created_at?: string
-                    updated_at?: string
+                    sender_id?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "messages_recipient_id_fkey"
+                        columns: ["recipient_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "messages_sender_id_fkey"
+                        columns: ["sender_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             notifications: {
                 Row: {
+                    created_at: string
                     id: string
-                    user_id: string
-                    type: 'package_assigned' | 'status_updated' | 'message_received' | 'payment_received'
-                    title: string
                     message: string
                     read: boolean
-                    related_shipment_id: string | null
-                    created_at: string
+                    type: string
+                    user_id: string
                 }
                 Insert: {
+                    created_at?: string
                     id?: string
-                    user_id: string
-                    type: 'package_assigned' | 'status_updated' | 'message_received' | 'payment_received'
-                    title: string
                     message: string
                     read?: boolean
-                    related_shipment_id?: string | null
-                    created_at?: string
+                    type: string
+                    user_id: string
                 }
                 Update: {
+                    created_at?: string
                     id?: string
-                    user_id?: string
-                    type?: 'package_assigned' | 'status_updated' | 'message_received' | 'payment_received'
-                    title?: string
                     message?: string
                     read?: boolean
-                    related_shipment_id?: string | null
-                    created_at?: string
+                    type?: string
+                    user_id?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "notifications_user_id_fkey"
+                        columns: ["user_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
-            conversations: {
+            profiles: {
                 Row: {
-                    id: string
-                    customer_id: string
-                    reshipper_id: string
-                    last_message: string | null
-                    last_message_at: string
+                    balance: number
                     created_at: string
+                    email: string | null
+                    full_name: string | null
+                    id: string
+                    membership_tier: string | null
+                    role: Database["public"]["Enums"]["user_role"]
+                }
+                Insert: {
+                    balance?: number
+                    created_at?: string
+                    email?: string | null
+                    full_name?: string | null
+                    id: string
+                    membership_tier?: string | null
+                    role?: Database["public"]["Enums"]["user_role"]
+                }
+                Update: {
+                    balance?: number
+                    created_at?: string
+                    email?: string | null
+                    full_name?: string | null
+                    id?: string
+                    membership_tier?: string | null
+                    role?: Database["public"]["Enums"]["user_role"]
+                }
+                Relationships: []
+            }
+            shipments: {
+                Row: {
+                    created_at: string
+                    delivery_address: string | null
+                    id: string
+                    item_description: string | null
+                    recipient_id: string | null
+                    sender_id: string
+                    shipping_carrier: string | null
+                    shipping_label_url: string | null
+                    status: string
+                    tracking_number: string
                     updated_at: string
+                    weight: number | null
                 }
                 Insert: {
-                    id?: string
-                    customer_id: string
-                    reshipper_id: string
-                    last_message?: string | null
-                    last_message_at?: string
                     created_at?: string
+                    delivery_address?: string | null
+                    id?: string
+                    item_description?: string | null
+                    recipient_id?: string | null
+                    sender_id: string
+                    shipping_carrier?: string | null
+                    shipping_label_url?: string | null
+                    status?: string
+                    tracking_number: string
                     updated_at?: string
+                    weight?: number | null
                 }
                 Update: {
-                    id?: string
-                    customer_id?: string
-                    reshipper_id?: string
-                    last_message?: string | null
-                    last_message_at?: string
                     created_at?: string
-                    updated_at?: string
-                }
-            }
-            messages: {
-                Row: {
-                    id: string
-                    conversation_id: string
-                    sender_id: string
-                    content: string
-                    is_read: boolean
-                    created_at: string
-                }
-                Insert: {
+                    delivery_address?: string | null
                     id?: string
-                    conversation_id: string
-                    sender_id: string
-                    content: string
-                    is_read?: boolean
-                    created_at?: string
-                }
-                Update: {
-                    id?: string
-                    conversation_id?: string
+                    item_description?: string | null
+                    recipient_id?: string | null
                     sender_id?: string
-                    content?: string
-                    is_read?: boolean
-                    created_at?: string
+                    shipping_carrier?: string | null
+                    shipping_label_url?: string | null
+                    status?: string
+                    tracking_number?: string
+                    updated_at?: string
+                    weight?: number | null
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "shipments_recipient_id_fkey"
+                        columns: ["recipient_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    },
+                    {
+                        foreignKeyName: "shipments_sender_id_fkey"
+                        columns: ["sender_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
             transactions: {
                 Row: {
-                    id: string
-                    user_id: string
-                    type: 'deposit' | 'withdrawal' | 'payment' | 'refund'
                     amount: number
-                    status: 'pending' | 'completed' | 'failed' | 'cancelled'
-                    payment_method: string | null
-                    payment_id: string | null
-                    description: string | null
                     created_at: string
-                    updated_at: string
+                    description: string | null
+                    id: string
+                    status: string
+                    type: string
+                    user_id: string
                 }
                 Insert: {
-                    id?: string
-                    user_id: string
-                    type: 'deposit' | 'withdrawal' | 'payment' | 'refund'
                     amount: number
-                    status?: 'pending' | 'completed' | 'failed' | 'cancelled'
-                    payment_method?: string | null
-                    payment_id?: string | null
-                    description?: string | null
                     created_at?: string
-                    updated_at?: string
+                    description?: string | null
+                    id?: string
+                    status?: string
+                    type: string
+                    user_id: string
                 }
                 Update: {
-                    id?: string
-                    user_id?: string
-                    type?: 'deposit' | 'withdrawal' | 'payment' | 'refund'
                     amount?: number
-                    status?: 'pending' | 'completed' | 'failed' | 'cancelled'
-                    payment_method?: string | null
-                    payment_id?: string | null
-                    description?: string | null
                     created_at?: string
-                    updated_at?: string
+                    description?: string | null
+                    id?: string
+                    status?: string
+                    type?: string
+                    user_id?: string
                 }
+                Relationships: [
+                    {
+                        foreignKeyName: "transactions_user_id_fkey"
+                        columns: ["user_id"]
+                        isOneToOne: false
+                        referencedRelation: "profiles"
+                        referencedColumns: ["id"]
+                    }
+                ]
             }
         }
         Views: {
@@ -378,7 +222,92 @@ export interface Database {
             [_ in never]: never
         }
         Enums: {
-            user_role: 'customer' | 'reshipper'
+            user_role: "customer" | "reshipper" | "moderator"
+        }
+        CompositeTypes: {
+            [_ in never]: never
         }
     }
 }
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+    PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+    ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+            Row: infer R
+        }
+    ? R
+    : never
+    : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+            Row: infer R
+        }
+    ? R
+    : never
+    : never
+
+export type TablesInsert<
+    PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+        Insert: infer I
+    }
+    ? I
+    : never
+    : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+    }
+    ? I
+    : never
+    : never
+
+export type TablesUpdate<
+    PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+    TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+    ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+        Update: infer U
+    }
+    ? U
+    : never
+    : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+    }
+    ? U
+    : never
+    : never
+
+export type Enums<
+    PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+    EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+    : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
