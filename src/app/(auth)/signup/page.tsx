@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Package } from 'lucide-react'
+import { Logo } from '@/components/logo'
 
 export const dynamic = 'force-dynamic'
 
@@ -119,8 +120,8 @@ export default function SignupPage() {
                 <div className="relative z-10 text-white space-y-10 max-w-md">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded bg-white">
-                                <Package className="h-6 w-6 text-black" />
+                            <div className="flex h-12 w-12 items-center justify-center rounded bg-white p-2">
+                                <Logo className="h-full w-full text-black" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
