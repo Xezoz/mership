@@ -117,7 +117,7 @@ export default function SignupPage() {
 
                 <div className="relative z-10 text-white space-y-10 max-w-md">
                     <div className="space-y-4">
-                        <Logo className="text-white" />
+                        <Logo className="text-white" showText={false} />
                         <div>
                             <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
                             <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
