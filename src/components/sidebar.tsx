@@ -31,12 +31,14 @@ export function Sidebar() {
     return (
         <>
             {/* Mobile Header with Menu Button */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-card px-4">
-                <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                        <Package className="h-5 w-5 text-primary-foreground" />
+            <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b border-white/5 bg-black px-4">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded bg-white">
+                        <Package className="h-5 w-5 text-black" />
                     </div>
-                    <span className="text-lg font-semibold">Mership</span>
+                    <div>
+                        <span className="text-sm font-light tracking-widest">MERSHIP</span>
+                    </div>
                 </div>
                 <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                     <SheetTrigger asChild>
@@ -51,11 +53,14 @@ export function Sidebar() {
                         </VisuallyHidden>
                         <div className="flex h-full flex-col">
                             {/* Logo */}
-                            <div className="flex h-16 items-center gap-2 border-b px-6">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                                    <Package className="h-5 w-5 text-primary-foreground" />
+                            <div className="flex h-16 items-center gap-3 border-b border-white/5 px-6">
+                                <div className="flex h-8 w-8 items-center justify-center rounded bg-white">
+                                    <Package className="h-5 w-5 text-black" />
                                 </div>
-                                <span className="text-lg font-semibold">Mership</span>
+                                <div>
+                                    <div className="text-sm font-light tracking-widest">MERSHIP</div>
+                                    <div className="text-[9px] text-zinc-500 tracking-widest">RESHIPPING</div>
+                                </div>
                             </div>
 
                             {/* Navigation */}
@@ -69,10 +74,10 @@ export function Sidebar() {
                                                 href={item.href}
                                                 onClick={() => setMobileOpen(false)}
                                                 className={cn(
-                                                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                                    'flex items-center gap-3 rounded px-3 py-2 text-xs font-light transition-colors',
                                                     isActive
-                                                        ? 'bg-secondary text-secondary-foreground'
-                                                        : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                                                        ? 'bg-white/5 text-white'
+                                                        : 'text-zinc-400 hover:bg-white/5 hover:text-white'
                                                 )}
                                             >
                                                 <item.icon className="h-5 w-5" />
@@ -95,11 +100,14 @@ export function Sidebar() {
             {/* Desktop Sidebar */}
             <div className="hidden md:flex h-full w-64 flex-col bg-card border-r">
                 {/* Logo */}
-                <div className="flex h-16 items-center gap-2 border-b px-6">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                        <Package className="h-5 w-5 text-primary-foreground" />
+                <div className="flex h-16 items-center gap-3 border-b border-white/5 px-6">
+                    <div className="flex h-8 w-8 items-center justify-center rounded bg-white">
+                        <Package className="h-5 w-5 text-black" />
                     </div>
-                    <span className="text-lg font-semibold">Mership</span>
+                    <div>
+                        <div className="text-sm font-light tracking-widest">MERSHIP</div>
+                        <div className="text-[9px] text-zinc-500 tracking-widest">RESHIPPING</div>
+                    </div>
                 </div>
 
                 {/* Navigation */}
@@ -113,10 +121,10 @@ export function Sidebar() {
                                     href={item.href}
                                     onClick={() => setMobileOpen(false)}
                                     className={cn(
-                                        'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                                        'flex items-center gap-3 rounded px-3 py-2 text-xs font-light transition-colors',
                                         isActive
-                                            ? 'bg-secondary text-secondary-foreground'
-                                            : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                                            ? 'bg-white/5 text-white'
+                                            : 'text-zinc-400 hover:bg-white/5 hover:text-white'
                                     )}
                                 >
                                     <item.icon className="h-5 w-5" />
