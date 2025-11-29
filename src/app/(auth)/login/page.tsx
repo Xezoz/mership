@@ -87,10 +87,9 @@ export default function LoginPage() {
 
                 <div className="relative z-10 text-white space-y-10 max-w-md">
                     <div className="space-y-4">
-                        <Logo className="text-white" showText={false} />
+                        <Logo className="text-white" />
                         <div>
-                            <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
-                            <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
+                            <p className="text-[10px] text-zinc-500 tracking-widest pl-1">GLOBAL RESHIPPING PLATFORM</p>
                         </div>
                     </div>
 
