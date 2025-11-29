@@ -73,10 +73,8 @@ export default function SignupPage() {
             <div className="flex min-h-screen items-center justify-center bg-background p-4">
                 <Card className="w-full max-w-md">
                     <CardHeader className="space-y-1 text-center">
-                        <div className="flex justify-center mb-4">
-                            <div className="flex items-center gap-2 font-medium text-white">
-                                <Logo />
-                            </div>
+                        <div className="flex justify-center mb-4 lg:hidden">
+                            <Logo className="text-foreground" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Check your email</CardTitle>
                         <CardDescription>
@@ -118,7 +116,8 @@ export default function SignupPage() {
                 </svg>
 
                 <div className="relative z-10 text-white space-y-10 max-w-md">
-                    <div className="space-y-2">
+                    <div className="space-y-4">
+                        <Logo className="text-white" />
                         <div>
                             <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
                             <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
@@ -174,9 +173,7 @@ export default function SignupPage() {
                 <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
                     <CardHeader className="space-y-1 text-center">
                         <div className="flex justify-center mb-4 lg:hidden">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-                                <Package className="h-7 w-7 text-primary-foreground" />
-                            </div>
+                            <Logo className="text-foreground" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
                         <CardDescription>

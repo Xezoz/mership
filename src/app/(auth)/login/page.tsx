@@ -86,7 +86,8 @@ export default function LoginPage() {
                 </svg>
 
                 <div className="relative z-10 text-white space-y-10 max-w-md">
-                    <div className="space-y-2">
+                    <div className="space-y-4">
+                        <Logo className="text-white" />
                         <div>
                             <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
                             <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
@@ -141,8 +142,8 @@ export default function LoginPage() {
             <div className="flex-1 flex items-center justify-center bg-black p-4">
                 <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
                     <CardHeader className="space-y-1 text-center">
-                        <div className="flex items-center gap-2 font-medium text-white">
-                            <Logo />
+                        <div className="flex justify-center mb-4 lg:hidden">
+                            <Logo className="text-foreground" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
                         <CardDescription>
