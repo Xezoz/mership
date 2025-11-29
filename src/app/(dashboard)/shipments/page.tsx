@@ -278,18 +278,6 @@ export default function ShipmentsPage() {
     }
 
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'completed':
-                return 'bg-green-500/10 text-green-500 border-green-500/20'
-            case 'pending':
-                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-            case 'failed':
-                return 'bg-red-500/10 text-red-500 border-red-500/20'
-            default:
-                return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
-        }
-    }
 
     const filteredShipments = shipments.filter((shipment) =>
         shipment.tracking_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -460,9 +448,9 @@ export default function ShipmentsPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant="outline" className={getStatusColor(shipment.status)}>
+                                            <span className="text-sm capitalize">
                                                 {shipment.status.replace('_', ' ')}
-                                            </Badge>
+                                            </span>
                                         </TableCell>
                                         {(isReshipper || isModerator) && (
                                             <TableCell>

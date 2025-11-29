@@ -337,18 +337,6 @@ export default function PaymentsPage() {
         }
     }
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'completed':
-                return 'bg-green-500/10 text-green-500 border-green-500/20'
-            case 'pending':
-                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
-            case 'failed':
-                return 'bg-red-500/10 text-red-500 border-red-500/20'
-            default:
-                return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
-        }
-    }
 
     if (loading) {
         return (
@@ -774,9 +762,9 @@ export default function PaymentsPage() {
                                         <span className="font-medium">
                                             {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                         </span>
-                                        <Badge variant="secondary" className={getStatusColor(tx.status)}>
+                                        <span className="text-xs text-muted-foreground">
                                             {tx.status}
-                                        </Badge>
+                                        </span>
                                     </div>
                                 </div>
                             ))}
