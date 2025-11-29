@@ -397,7 +397,13 @@ export default function InboxPage() {
                             <div className="p-4 text-center text-sm text-muted-foreground">No conversations yet</div>
                         )}
 
-                        {/* Add header for moderator conversations */}
+                        {/* Add header for conversations based on role */}
+                        {isCustomer && conversations.filter(conv => conv.other_user?.role !== 'moderator' && conv.other_user?.role !== 'reshipper').length > 0 && (
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                        )}
+                        {isReshipper && conversations.filter(conv => conv.other_user?.role !== 'moderator').length > 0 && (
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                        )}
                         {isModerator && conversations.filter(conv => conv.other_user?.role !== 'reshipper').length > 0 && (
                             <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
                         )}
