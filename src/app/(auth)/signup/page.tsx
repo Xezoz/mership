@@ -94,30 +94,54 @@ export default function SignupPage() {
 
     return (
         <div className="flex min-h-screen">
-            {/* Left side - Image */}
+            {/* Left side - Futuristic Reshipping Design */}
             <div className="hidden lg:flex lg:w-1/2 bg-black p-12 items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
-                <div className="relative z-10 text-white space-y-6 max-w-md">
+                {/* Animated grid background */}
+                <div className="absolute inset-0">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
+                </div>
+
+                {/* Geometric shipping route accents */}
+                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
+                <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-white/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-20 right-20 w-64 h-64 border border-white/10 rotate-45" />
+                <div className="absolute bottom-20 left-20 w-48 h-48 border border-white/5 rotate-12" />
+
+                <div className="relative z-10 text-white space-y-8 max-w-md">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white border-2 border-white/20 shadow-lg shadow-white/10">
                             <Package className="h-8 w-8 text-black" />
                         </div>
-                        <h1 className="text-3xl font-bold">Mership</h1>
+                        <h1 className="text-3xl font-bold tracking-tight">Mership</h1>
                     </div>
-                    <h2 className="text-4xl font-bold leading-tight">
-                        Start your shipping journey today
-                    </h2>
-                    <p className="text-lg text-zinc-400">
-                        Join thousands of users managing packages and connecting with reshippers worldwide.
-                    </p>
-                    <div className="flex gap-8 pt-4">
-                        <div>
-                            <div className="text-3xl font-bold">10k+</div>
-                            <div className="text-sm text-zinc-500">Packages Shipped</div>
+
+                    <div className="space-y-4">
+                        <h2 className="text-5xl font-bold leading-tight tracking-tight">
+                            Ship Anywhere,
+                            <span className="block bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+                                From Everywhere
+                            </span>
+                        </h2>
+                        <p className="text-lg text-zinc-400 leading-relaxed">
+                            Join the future of international shipping. Get your packages reshipped globally with ease and transparency.
+                        </p>
+                    </div>
+
+                    {/* Feature highlights */}
+                    <div className="space-y-3 pt-4">
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                            <span className="text-zinc-300">International package forwarding</span>
                         </div>
-                        <div>
-                            <div className="text-3xl font-bold">500+</div>
-                            <div className="text-sm text-zinc-500">Active Users</div>
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                            <span className="text-zinc-300">Trusted reshipper network</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                            <span className="text-zinc-300">Real-time tracking & updates</span>
                         </div>
                     </div>
                 </div>
