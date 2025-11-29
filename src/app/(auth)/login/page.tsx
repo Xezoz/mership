@@ -141,10 +141,8 @@ export default function LoginPage() {
             <div className="flex-1 flex items-center justify-center bg-black p-4">
                 <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
                     <CardHeader className="space-y-1 text-center">
-                        <div className="flex justify-center mb-4 lg:hidden">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
-                                <Package className="h-7 w-7 text-primary-foreground" />
-                            </div>
+                        <div className="flex items-center gap-2 font-medium text-white">
+                            <Logo />
                         </div>
                         <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
                         <CardDescription>

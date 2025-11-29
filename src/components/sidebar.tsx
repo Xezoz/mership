@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useUserRole } from '@/hooks/use-user-role'
 import { Menu, MessageSquare, CreditCard, Truck, Users, LayoutDashboard } from 'lucide-react'
+import { Logo } from '@/components/logo'
 import { SidebarUserFooter } from '@/components/sidebar-user-footer'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -86,7 +87,7 @@ export function Sidebar() {
             <div className="hidden md:flex h-full w-64 flex-col bg-card border-r">
                 {/* Logo */}
                 <div className="flex h-16 items-center border-b px-6">
-                    <span className="font-semibold text-xl">MERSHIP</span>
+                    <Logo />
                 </div>
 
                 {/* Navigation */}
