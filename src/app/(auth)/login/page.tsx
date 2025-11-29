@@ -92,7 +92,7 @@ export default function LoginPage() {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
-                                <p className="text-[10px] text-zinc-500 tracking-widest">RESHIPPING INTELLIGENCE</p>
+                                <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
                             </div>
                         </div>
                     </div>
@@ -102,12 +102,12 @@ export default function LoginPage() {
                             <div className="text-xs text-zinc-500 tracking-widest font-mono">PLATFORM // ACCESS</div>
                             <h2 className="text-4xl font-light leading-tight tracking-tight">
                                 Global Package
-                                <span className="block font-normal">Intelligence Network</span>
+                                <span className="block font-normal">Forwarding Network</span>
                             </h2>
                         </div>
                         <p className="text-sm text-zinc-400 leading-relaxed font-light">
-                            Orchestrate international package flows with precision.
-                            Connect verified reshippers across continents through our secure intelligence platform.
+                            Streamline international package delivery with precision.
+                            Connect with verified reshippers across continents through our secure platform.
                         </p>
                     </div>
 
@@ -133,7 +133,7 @@ export default function LoginPage() {
                                 <div className="mt-1 h-1 w-1 rounded-full bg-white" />
                                 <div className="space-y-0.5">
                                     <div className="text-white font-light">Secure Operations</div>
-                                    <div className="text-zinc-500 text-[10px]">End-to-end encrypted logistics</div>
+                                    <div className="text-zinc-500 text-[10px]">End-to-end encrypted delivery</div>
                                 </div>
                             </div>
                         </div>

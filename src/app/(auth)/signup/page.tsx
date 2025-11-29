@@ -124,7 +124,7 @@ export default function SignupPage() {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
-                                <p className="text-[10px] text-zinc-500 tracking-widest">RESHIPPING INTELLIGENCE</p>
+                                <p className="text-[10px] text-zinc-500 tracking-widest">GLOBAL RESHIPPING PLATFORM</p>
                             </div>
                         </div>
                     </div>
@@ -134,12 +134,12 @@ export default function SignupPage() {
                             <div className="text-xs text-zinc-500 tracking-widest font-mono">PLATFORM // ONBOARDING</div>
                             <h2 className="text-4xl font-light leading-tight tracking-tight">
                                 Join the Network
-                                <span className="block font-normal">of Global Logistics</span>
+                                <span className="block font-normal">of Global Reshipping</span>
                             </h2>
                         </div>
                         <p className="text-sm text-zinc-400 leading-relaxed font-light">
                             Access enterprise-grade reshipping infrastructure.
-                            Deploy packages across borders with military-grade security and precision.
+                            Send packages across borders with advanced security and precision.
                         </p>
                     </div>
 
@@ -165,7 +165,7 @@ export default function SignupPage() {
                                 <div className="mt-1 h-1 w-1 rounded-full bg-white" />
                                 <div className="space-y-0.5">
                                     <div className="text-white font-light">Secure Operations</div>
-                                    <div className="text-zinc-500 text-[10px]">End-to-end encrypted logistics</div>
+                                    <div className="text-zinc-500 text-[10px]">End-to-end encrypted delivery</div>
                                 </div>
                             </div>
                         </div>
