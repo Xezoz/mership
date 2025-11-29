@@ -10,7 +10,6 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { Logo } from '@/components/logo'
 
 export function Sidebar() {
     const pathname = usePathname()
@@ -31,7 +30,7 @@ export function Sidebar() {
         <>
             {/* Mobile Header with Menu Button */}
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background px-4">
-                <Logo className="h-10 w-10 text-primary" />
+                <span className="font-semibold text-xl">MERSHIP</span>
                 <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -46,7 +45,7 @@ export function Sidebar() {
                         <div className="flex h-full flex-col">
                             {/* Logo */}
                             <div className="flex h-16 items-center border-b px-6">
-                                <Logo className="h-10 w-10 text-primary" />
+                                <span className="font-semibold text-xl">MERSHIP</span>
                             </div>
 
                             {/* Navigation */}
@@ -87,7 +86,7 @@ export function Sidebar() {
             <div className="hidden md:flex h-full w-64 flex-col bg-card border-r">
                 {/* Logo */}
                 <div className="flex h-16 items-center border-b px-6">
-                    <Logo className="h-10 w-10 text-primary" />
+                    <span className="font-semibold text-xl">MERSHIP</span>
                 </div>
 
                 {/* Navigation */}
