@@ -174,7 +174,7 @@ export default function SignupPage() {
             </div>
 
             {/* Right side - Signup Form */}
-            <div className="flex-1 flex items-center justify-center bg-background p-4">
+            <div className="flex-1 flex items-center justify-center bg-black p-4">
                 <Card className="w-full max-w-md border-0 shadow-none lg:border lg:shadow-sm">
                     <CardHeader className="space-y-1 text-center">
                         <div className="flex justify-center mb-4 lg:hidden">

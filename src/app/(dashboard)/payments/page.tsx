@@ -338,13 +338,22 @@ export default function PaymentsPage() {
     }
 
     const getStatusColor = (status: string) => {
-        return 'bg-muted text-foreground'
+        switch (status) {
+            case 'completed':
+                return 'bg-green-500/10 text-green-500 border-green-500/20'
+            case 'pending':
+                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+            case 'failed':
+                return 'bg-red-500/10 text-red-500 border-red-500/20'
+            default:
+                return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
+        }
     }
 
     if (loading) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -352,52 +361,52 @@ export default function PaymentsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Payments</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
                 <p className="text-muted-foreground">Manage your account balance and transactions</p>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Enhanced Balance Card */}
                 <Card className="overflow-hidden">
-                    <CardHeader className="border-b bg-muted/40 pb-8">
-                        <CardTitle className="flex items-center gap-2">
-                            <Wallet className="h-5 w-5" />
+                    <CardHeader className="border-b bg-muted/50 pb-8">
+                        <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                            <Wallet className="h-4 w-4" />
                             Account Balance
                         </CardTitle>
                         <CardDescription>Your current available funds</CardDescription>
                         <div className="mt-4 flex items-baseline gap-2">
                             <span className="text-4xl font-bold">${balance.toFixed(2)}</span>
-                            <span className="text-sm text-muted-foreground">USD</span>
+                            <span className="text-sm font-medium text-muted-foreground">USD</span>
                         </div>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-6 p-6">
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <TrendingUp className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                <TrendingUp className="h-3 w-3" />
                                 Total Deposited
                             </div>
-                            <div className="text-2xl font-bold">${stats.totalDeposited.toFixed(2)}</div>
+                            <div className="text-xl font-bold">${stats.totalDeposited.toFixed(2)}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <TrendingDown className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                <TrendingDown className="h-3 w-3" />
                                 Total Spent
                             </div>
-                            <div className="text-2xl font-bold">${stats.totalSpent.toFixed(2)}</div>
+                            <div className="text-xl font-bold">${stats.totalSpent.toFixed(2)}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Activity className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                <Activity className="h-3 w-3" />
                                 Total Transactions
                             </div>
-                            <div className="text-2xl font-bold">{stats.transactionCount}</div>
+                            <div className="text-xl font-bold">{stats.transactionCount}</div>
                         </div>
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <ArrowUpRight className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                <ArrowUpRight className="h-3 w-3" />
                                 Last Activity
                             </div>
-                            <div className="text-lg font-medium truncate">
+                            <div className="text-sm font-medium truncate">
                                 {stats.lastTransactionDate ? new Date(stats.lastTransactionDate).toLocaleDateString() : 'N/A'}
                             </div>
                         </div>
@@ -407,42 +416,42 @@ export default function PaymentsPage() {
                 {/* Deposit Card (Customers Only) */}
                 {isCustomer && (
                     <Card className="flex flex-col h-full min-h-0">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <ArrowDownLeft className="h-5 w-5" />
+                        <CardHeader className="border-b">
+                            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                <ArrowDownLeft className="h-4 w-4" />
                                 Deposit Funds
                             </CardTitle>
                             <CardDescription>Add money via Card, Apple Pay, or Google Pay (Whop)</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1 flex flex-col justify-between space-y-4">
+                        <CardContent className="flex-1 flex flex-col justify-between space-y-4 pt-6">
                             <div className="space-y-3">
                                 <Label>Select Amount (USD)</Label>
                                 <div className="grid grid-cols-2 gap-3">
                                     <Button
                                         variant={depositAmount === '10' ? 'default' : 'outline'}
                                         onClick={() => setDepositAmount('10')}
-                                        className="h-16 text-lg font-semibold"
+                                        className="h-16 text-lg"
                                     >
                                         $10
                                     </Button>
                                     <Button
                                         variant={depositAmount === '25' ? 'default' : 'outline'}
                                         onClick={() => setDepositAmount('25')}
-                                        className="h-16 text-lg font-semibold"
+                                        className="h-16 text-lg"
                                     >
                                         $25
                                     </Button>
                                     <Button
                                         variant={depositAmount === '50' ? 'default' : 'outline'}
                                         onClick={() => setDepositAmount('50')}
-                                        className="h-16 text-lg font-semibold"
+                                        className="h-16 text-lg"
                                     >
                                         $50
                                     </Button>
                                     <Button
                                         variant={depositAmount === '100' ? 'default' : 'outline'}
                                         onClick={() => setDepositAmount('100')}
-                                        className="h-16 text-lg font-semibold"
+                                        className="h-16 text-lg"
                                     >
                                         $100
                                     </Button>
@@ -469,14 +478,14 @@ export default function PaymentsPage() {
                 {/* Moderator Actions Card */}
                 {isModerator && (
                     <Card className="flex flex-col h-full min-h-0">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Wallet className="h-5 w-5" />
+                        <CardHeader className="border-b">
+                            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                <Wallet className="h-4 w-4" />
                                 Moderator Actions
                             </CardTitle>
                             <CardDescription>Manage user balances and payouts</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1 flex flex-col gap-4">
+                        <CardContent className="flex-1 flex flex-col gap-4 pt-6">
                             <Button
                                 variant="outline"
                                 className="w-full justify-start h-auto py-4"
@@ -524,14 +533,14 @@ export default function PaymentsPage() {
                 {/* Withdraw Card (Reshippers Only) */}
                 {isReshipper && (
                     <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <ArrowUpRight className="h-5 w-5" />
+                        <CardHeader className="border-b">
+                            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                <ArrowUpRight className="h-4 w-4" />
                                 Withdraw Funds
                             </CardTitle>
                             <CardDescription>Transfer money to your bank account</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 pt-6">
                             {withdrawalStep === 1 && (
                                 <div className="space-y-4">
                                     <div className="space-y-2">
@@ -552,7 +561,7 @@ export default function PaymentsPage() {
                                                     key={percent}
                                                     variant="outline"
                                                     size="sm"
-                                                    className="flex-1 text-xs"
+                                                    className="flex-1"
                                                     onClick={() => {
                                                         const amount = (balance * percent) / 100
                                                         setWithdrawAmount(amount.toFixed(2))
@@ -596,7 +605,7 @@ export default function PaymentsPage() {
                                         >
                                             <div className="flex flex-col items-start gap-1">
                                                 <span className="font-semibold">Crypto (USDT/USDC)</span>
-                                                <span className="text-xs text-muted-foreground">Fastest transfer, low fees</span>
+                                                <span className="text-xs opacity-70">Fastest transfer, low fees</span>
                                             </div>
                                         </Button>
                                         <Button
@@ -606,7 +615,7 @@ export default function PaymentsPage() {
                                         >
                                             <div className="flex flex-col items-start gap-1">
                                                 <span className="font-semibold">ACH Transfer</span>
-                                                <span className="text-xs text-muted-foreground">1-3 business days</span>
+                                                <span className="text-xs opacity-70">1-3 business days</span>
                                             </div>
                                         </Button>
                                         <Button
@@ -616,7 +625,7 @@ export default function PaymentsPage() {
                                         >
                                             <div className="flex flex-col items-start gap-1">
                                                 <span className="font-semibold">Bank Wire</span>
-                                                <span className="text-xs text-muted-foreground">International transfers available</span>
+                                                <span className="text-xs opacity-70">International transfers available</span>
                                             </div>
                                         </Button>
                                     </div>
@@ -733,11 +742,11 @@ export default function PaymentsPage() {
 
             {/* Transaction History */}
             <Card>
-                <CardHeader>
+                <CardHeader className="border-b">
                     <CardTitle>Recent Transactions</CardTitle>
                     <CardDescription>Your latest payment activity</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     {transactions.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                             No transactions yet
@@ -749,20 +758,20 @@ export default function PaymentsPage() {
                                     <div className="flex items-center gap-4">
                                         <div className="p-2 rounded-full bg-muted">
                                             {tx.type === 'deposit' ? (
-                                                <ArrowDownLeft className="h-4 w-4 text-foreground" />
+                                                <ArrowDownLeft className="h-4 w-4" />
                                             ) : (
-                                                <ArrowUpRight className="h-4 w-4 text-foreground" />
+                                                <ArrowUpRight className="h-4 w-4" />
                                             )}
                                         </div>
                                         <div>
                                             <p className="font-medium capitalize">{tx.type}</p>
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-xs text-muted-foreground">
                                                 {new Date(tx.created_at).toLocaleDateString()} at {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="font-semibold text-foreground">
+                                        <span className="font-medium">
                                             {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                         </span>
                                         <Badge variant="secondary" className={getStatusColor(tx.status)}>
@@ -794,7 +803,6 @@ export default function PaymentsPage() {
                     <PayoutDialog
                         open={payoutDialogOpen}
                         onOpenChange={setPayoutDialogOpen}
-                        onSuccess={fetchData}
                     />
                 </>
             )}

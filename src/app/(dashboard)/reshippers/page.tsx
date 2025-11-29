@@ -136,7 +136,7 @@ export default function ReshippersPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Verified</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-foreground" />
+                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.verified}</div>
@@ -147,7 +147,7 @@ export default function ReshippersPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Top Rated</CardTitle>
-                        <Star className="h-4 w-4 text-foreground" />
+                        <Star className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.topRated}</div>
@@ -158,7 +158,7 @@ export default function ReshippersPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
-                        <Star className="h-4 w-4 text-foreground" />
+                        <Star className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.avgRating}</div>
@@ -184,17 +184,17 @@ export default function ReshippersPage() {
             {reshippers.length === 0 ? (
                 <Card>
                     <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">No reshippers found</p>
+                        <p className="text-lg font-medium text-muted-foreground">No reshippers found</p>
                     </CardContent>
                 </Card>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {reshippers.map((reshipper) => (
                         <Card key={reshipper.id} className="flex flex-col">
-                            <CardHeader>
+                            <CardHeader className="pb-4">
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
-                                        <Avatar className="h-12 w-12">
+                                        <Avatar className="h-10 w-10">
                                             <AvatarImage src={reshipper.avatar_url || ''} />
                                             <AvatarFallback>
                                                 {reshipper.full_name?.[0] || reshipper.email[0].toUpperCase()}
@@ -204,10 +204,10 @@ export default function ReshippersPage() {
                                             <div className="flex items-center gap-2">
                                                 <h3 className="font-semibold">{reshipper.full_name || 'User'}</h3>
                                                 {reshipper.is_verified && (
-                                                    <CheckCircle2 className="h-4 w-4 text-foreground" />
+                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                                 <MapPin className="h-3 w-3" />
                                                 {reshipper.address_city && reshipper.address_country
                                                     ? `${reshipper.address_city}, ${reshipper.address_country}`
@@ -221,7 +221,7 @@ export default function ReshippersPage() {
                             <CardContent className="flex-1 space-y-4">
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-1">
-                                        <Star className="h-4 w-4 text-foreground" />
+                                        <Star className="h-4 w-4 fill-primary text-primary" />
                                         <span className="font-medium">{reshipper.rating.toFixed(1)}</span>
                                         <span className="text-muted-foreground">({reshipper.review_count} reviews)</span>
                                     </div>
@@ -238,7 +238,7 @@ export default function ReshippersPage() {
                                 )}
                             </CardContent>
 
-                            <CardFooter>
+                            <CardFooter className="pt-2">
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <Button
@@ -254,7 +254,7 @@ export default function ReshippersPage() {
                                             <DialogTitle className="flex items-center gap-2">
                                                 {reshipper.full_name || 'User'}
                                                 {reshipper.is_verified && (
-                                                    <CheckCircle2 className="h-5 w-5 text-foreground" />
+                                                    <CheckCircle2 className="h-5 w-5 text-primary" />
                                                 )}
                                             </DialogTitle>
                                             <DialogDescription>
@@ -265,7 +265,7 @@ export default function ReshippersPage() {
                                         <div className="space-y-6">
                                             {/* Contact Info */}
                                             <div>
-                                                <h4 className="font-semibold mb-2">Contact Information</h4>
+                                                <h4 className="font-medium mb-2">Contact Information</h4>
                                                 <div className="space-y-2 text-sm">
                                                     <div className="flex items-center gap-2">
                                                         <Mail className="h-4 w-4 text-muted-foreground" />
@@ -290,7 +290,7 @@ export default function ReshippersPage() {
                                             {reshipper.about && (
                                                 <>
                                                     <div>
-                                                        <h4 className="font-semibold mb-2">About</h4>
+                                                        <h4 className="font-medium mb-2">About</h4>
                                                         <p className="text-sm text-muted-foreground">{reshipper.about}</p>
                                                     </div>
                                                     <Separator />
@@ -301,7 +301,7 @@ export default function ReshippersPage() {
                                             {reshipper.allowed_sites && reshipper.allowed_sites.length > 0 && (
                                                 <>
                                                     <div>
-                                                        <h4 className="font-semibold mb-2">Allowed Sites</h4>
+                                                        <h4 className="font-medium mb-2">Allowed Sites</h4>
                                                         <div className="flex flex-wrap gap-2">
                                                             {reshipper.allowed_sites.map((site, idx) => (
                                                                 <Badge key={idx} variant="secondary">
@@ -317,7 +317,7 @@ export default function ReshippersPage() {
                                             {/* Banned Items */}
                                             {reshipper.banned_items && reshipper.banned_items.length > 0 && (
                                                 <div>
-                                                    <h4 className="font-semibold mb-2">Banned Items</h4>
+                                                    <h4 className="font-medium mb-2">Banned Items</h4>
                                                     <div className="flex flex-wrap gap-2">
                                                         {reshipper.banned_items.map((item, idx) => (
                                                             <Badge key={idx} variant="destructive">

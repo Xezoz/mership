@@ -20,8 +20,8 @@ export function TopReshippersCard({ reshippers }: TopReshippersCardProps) {
         <Card className="col-span-3">
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    <CardTitle>Top Reshippers</CardTitle>
+                    <Trophy className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Top Reshippers</CardTitle>
                 </div>
                 <CardDescription>
                     Highest performing reshippers by volume
@@ -37,21 +37,21 @@ export function TopReshippersCard({ reshippers }: TopReshippersCardProps) {
                         {reshippers.map((reshipper) => (
                             <div key={reshipper.id} className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-bold text-sm">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-medium">
                                         #{reshipper.rank}
                                     </div>
                                     <div className="space-y-1">
                                         <p className="text-sm font-medium leading-none">
                                             {reshipper.full_name || 'Unknown Reshipper'}
                                         </p>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-xs text-muted-foreground">
                                             {reshipper.email}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Package className="h-4 w-4 text-muted-foreground" />
-                                    <span className="font-bold">{reshipper.shipment_count}</span>
+                                    <span className="font-medium">{reshipper.shipment_count}</span>
                                 </div>
                             </div>
                         ))}

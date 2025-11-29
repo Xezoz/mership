@@ -170,7 +170,7 @@ export default function SettingsPage() {
     if (loading) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -178,7 +178,7 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold">Settings</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
                 <p className="text-muted-foreground">Manage your account settings and profile</p>
             </div>
 
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                                         <Badge key={site} variant="secondary" className="gap-1">
                                             {site}
                                             <X
-                                                className="h-3 w-3 cursor-pointer"
+                                                className="h-3 w-3 cursor-pointer hover:text-foreground"
                                                 onClick={() => removeAllowedSite(site)}
                                             />
                                         </Badge>
@@ -381,7 +381,7 @@ export default function SettingsPage() {
                                         <Badge key={item} variant="destructive" className="gap-1">
                                             {item}
                                             <X
-                                                className="h-3 w-3 cursor-pointer"
+                                                className="h-3 w-3 cursor-pointer hover:text-destructive-foreground"
                                                 onClick={() => removeBannedItem(item)}
                                             />
                                         </Badge>

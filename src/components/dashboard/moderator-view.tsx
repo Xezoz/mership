@@ -277,7 +277,7 @@ export function ModeratorDashboard() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -287,7 +287,7 @@ export function ModeratorDashboard() {
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Moderator Dashboard</h2>
                 <p className="text-muted-foreground">
-                    System overview and management
+                    System Overview & Management
                 </p>
             </div>
 
@@ -340,12 +340,12 @@ export function ModeratorDashboard() {
             <Card>
                 <CardHeader>
                     <CardTitle>Recent Transactions</CardTitle>
-                    <CardDescription>Welcome back! Here&apos;s an overview of the platform status.actions.</CardDescription>
+                    <CardDescription>System-wide financial activity</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {withdrawals.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
-                            No transactions yet
+                            No transactions recorded
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -353,11 +353,11 @@ export function ModeratorDashboard() {
                                 <div key={tx.id} className="flex flex-col md:flex-row md:items-center justify-between border rounded-lg p-4 gap-4">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-lg">
+                                            <span className="font-semibold">
                                                 {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                             </span>
-                                            <Badge variant="outline" className="capitalize">{tx.status}</Badge>
-                                            <Badge variant="secondary" className="capitalize">{tx.type}</Badge>
+                                            <Badge variant="outline">{tx.status}</Badge>
+                                            <Badge variant="secondary">{tx.type}</Badge>
                                         </div>
                                         <div className="text-sm text-muted-foreground">
                                             User: <span className="font-medium text-foreground">{tx.profiles?.full_name || 'Unknown User'}</span> ({tx.profiles?.email})
@@ -367,7 +367,7 @@ export function ModeratorDashboard() {
                                         </div>
                                         {/* Payment Details from Description */}
                                         {tx.description && (
-                                            <div className="mt-2 bg-muted/50 p-2 rounded text-sm font-mono">
+                                            <div className="mt-2 bg-muted p-2 rounded text-xs text-muted-foreground">
                                                 {tx.description}
                                             </div>
                                         )}
@@ -391,7 +391,7 @@ export function ModeratorDashboard() {
                                                 onClick={() => handleWithdrawalAction(tx.id, 'approve')}
                                             >
                                                 {processingId === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
-                                                Approve (Paid)
+                                                Approve
                                             </Button>
                                         </div>
                                     )}

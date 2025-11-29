@@ -303,7 +303,7 @@ export default function InboxPage() {
     }
 
     if (loading) {
-        return <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>
+        return <div className="flex h-full items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
     }
 
     return (
@@ -313,7 +313,10 @@ export default function InboxPage() {
                 <div className="p-4 border-b">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input placeholder="Search..." className="pl-9" />
+                        <Input
+                            placeholder="Search..."
+                            className="pl-9"
+                        />
                     </div>
                 </div>
                 <ScrollArea className="flex-1">
@@ -324,7 +327,7 @@ export default function InboxPage() {
                                 {/* Support Section */}
                                 {moderators.length > 0 && (
                                     <>
-                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">Support Team</div>
+                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Support Team</div>
                                         {moderators.map((mod) => {
                                             // Find existing conversation with this moderator
                                             const existingConv = conversations.find(c =>
@@ -335,16 +338,16 @@ export default function InboxPage() {
                                                 <button
                                                     key={mod.id}
                                                     onClick={() => handleStartConversation(mod)}
-                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b last:border-0"
                                                 >
-                                                    <Avatar>
+                                                    <Avatar className="h-9 w-9">
                                                         <AvatarImage src={mod.avatar_url || undefined} />
                                                         <AvatarFallback>{mod.full_name?.[0] || 'S'}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1 overflow-hidden">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="font-semibold">{mod.full_name || 'Support Agent'}</span>
-                                                            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                                                            <span className="font-medium text-sm">{mod.full_name || 'Support Agent'}</span>
+                                                            <CheckCircle2 className="h-3 w-3 text-primary" />
                                                         </div>
                                                         <p className="text-xs text-muted-foreground truncate">
                                                             {existingConv?.last_message || 'Start a conversation'}
@@ -360,7 +363,7 @@ export default function InboxPage() {
                                 {/* Reshippers Section */}
                                 {reshippers.length > 0 && (
                                     <>
-                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Available Reshippers</div>
+                                        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Available Reshippers</div>
                                         {reshippers.map((reshipper) => {
                                             // Find existing conversation with this reshipper
                                             const existingConv = conversations.find(c =>
@@ -371,14 +374,14 @@ export default function InboxPage() {
                                                 <button
                                                     key={reshipper.id}
                                                     onClick={() => handleStartConversation(reshipper)}
-                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50"
+                                                    className="flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b last:border-0"
                                                 >
-                                                    <Avatar>
+                                                    <Avatar className="h-9 w-9">
                                                         <AvatarImage src={reshipper.avatar_url || undefined} />
                                                         <AvatarFallback>{reshipper.full_name?.[0] || reshipper.email?.[0]?.toUpperCase() || 'R'}</AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1 overflow-hidden">
-                                                        <span className="font-semibold">{reshipper.full_name || 'Reshipper'}</span>
+                                                        <span className="font-medium text-sm">{reshipper.full_name || 'Reshipper'}</span>
                                                         <p className="text-xs text-muted-foreground truncate">
                                                             {existingConv?.last_message || 'Start a conversation'}
                                                         </p>
@@ -399,13 +402,13 @@ export default function InboxPage() {
 
                         {/* Add header for conversations based on role */}
                         {isCustomer && conversations.filter(conv => conv.other_user?.role !== 'moderator' && conv.other_user?.role !== 'reshipper').length > 0 && (
-                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Your Conversations</div>
                         )}
                         {isReshipper && conversations.filter(conv => conv.other_user?.role !== 'moderator').length > 0 && (
-                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Your Conversations</div>
                         )}
                         {isModerator && conversations.filter(conv => conv.other_user?.role !== 'reshipper').length > 0 && (
-                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-2">Your Conversations</div>
                         )}
 
                         {conversations
@@ -428,15 +431,15 @@ export default function InboxPage() {
                                 <button
                                     key={conv.id}
                                     onClick={() => setSelectedConversation(conv)}
-                                    className={`flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
+                                    className={`flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 border-b last:border-0 ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
                                 >
-                                    <Avatar>
+                                    <Avatar className="h-9 w-9">
                                         <AvatarImage src={conv.other_user?.avatar_url || undefined} />
                                         <AvatarFallback>{conv.other_user?.full_name?.[0] || 'U'}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 overflow-hidden">
                                         <div className="flex items-center justify-between">
-                                            <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
+                                            <span className="font-medium text-sm">{conv.other_user?.full_name || 'User'}</span>
                                             <span className="text-xs text-muted-foreground">
                                                 {(() => {
                                                     if (!conv.last_message_at) return 'No messages'
@@ -455,7 +458,7 @@ export default function InboxPage() {
                                                 })()}
                                             </span>
                                         </div>
-                                        <p className="truncate text-sm text-muted-foreground">
+                                        <p className="truncate text-xs text-muted-foreground">
                                             {conv.last_message || 'No messages yet'}
                                         </p>
                                     </div>
@@ -471,13 +474,13 @@ export default function InboxPage() {
                     <>
                         <div className="flex items-center justify-between border-b p-4">
                             <div className="flex items-center gap-3">
-                                <Avatar>
+                                <Avatar className="h-9 w-9">
                                     <AvatarImage src={selectedConversation.other_user?.avatar_url || undefined} />
                                     <AvatarFallback>{selectedConversation.other_user?.full_name?.[0] || 'U'}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <h3 className="font-semibold">{selectedConversation.other_user?.full_name || 'User'}</h3>
-                                    <p className="text-xs text-muted-foreground capitalize">
+                                    <h3 className="font-medium text-sm">{selectedConversation.other_user?.full_name || 'User'}</h3>
+                                    <p className="text-xs text-muted-foreground">
                                         {selectedConversation.other_user?.role === 'moderator' ? 'Support Team' : selectedConversation.other_user?.role}
                                     </p>
                                 </div>
@@ -504,9 +507,9 @@ export default function InboxPage() {
                                     const isMe = msg.sender_id === currentUserId
                                     return (
                                         <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`max-w-[70%] rounded-lg p-3 ${isMe ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-muted'}`}>
+                                            <div className={`max-w-[70%] rounded-lg p-3 ${isMe ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                                                 <p className="text-sm">{msg.content}</p>
-                                                <p className={`mt-1 text-[10px] ${isMe ? 'text-white/70 dark:text-black/70' : 'text-muted-foreground'}`}>
+                                                <p className={`mt-1 text-[10px] ${isMe ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                                                     {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
@@ -526,14 +529,14 @@ export default function InboxPage() {
                                     className="flex-1"
                                     disabled={sending}
                                 />
-                                <Button type="submit" size="icon" disabled={sending} className="bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black">
+                                <Button type="submit" size="icon" disabled={sending}>
                                     <Send className="h-4 w-4" />
                                 </Button>
                             </form>
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-1 items-center justify-center text-muted-foreground">
+                    <div className="flex flex-1 items-center justify-center text-muted-foreground text-sm">
                         {isCustomer ? 'Select a reshipper to start messaging' : 'Select a conversation to start messaging'}
                     </div>
                 )}
@@ -546,15 +549,15 @@ export default function InboxPage() {
                         <>
                             <DialogHeader>
                                 <div className="flex items-start gap-4">
-                                    <Avatar className="h-16 w-16 border-2 border-background shadow-sm">
+                                    <Avatar className="h-16 w-16">
                                         <AvatarImage src={selectedConversation.other_user.avatar_url || undefined} />
-                                        <AvatarFallback>{selectedConversation.other_user.full_name?.[0] || 'U'}</AvatarFallback>
+                                        <AvatarFallback className="text-xl">{selectedConversation.other_user.full_name?.[0] || 'U'}</AvatarFallback>
                                     </Avatar>
                                     <div className="space-y-1">
-                                        <DialogTitle className="text-2xl flex items-center gap-2">
+                                        <DialogTitle className="text-xl flex items-center gap-2">
                                             {selectedConversation.other_user.full_name || 'Reshipper'}
                                             {selectedConversation.other_user.is_verified && (
-                                                <CheckCircle2 className="h-5 w-5 text-foreground" />
+                                                <CheckCircle2 className="h-5 w-5 text-primary" />
                                             )}
                                         </DialogTitle>
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -567,7 +570,7 @@ export default function InboxPage() {
                             <div className="grid gap-6 py-4">
                                 {selectedConversation.other_user.about && (
                                     <div className="space-y-2">
-                                        <h4 className="font-medium leading-none">About</h4>
+                                        <h4 className="font-medium text-sm">About</h4>
                                         <p className="text-sm text-muted-foreground">
                                             {selectedConversation.other_user.about}
                                         </p>
@@ -578,10 +581,10 @@ export default function InboxPage() {
 
                                 {(selectedConversation.other_user.address_street || selectedConversation.other_user.address_city) && (
                                     <div className="space-y-2">
-                                        <h4 className="font-medium leading-none flex items-center gap-2">
+                                        <h4 className="font-medium text-sm flex items-center gap-2">
                                             <MapPin className="h-4 w-4" /> Shipping Address
                                         </h4>
-                                        <div className="rounded-md bg-muted p-3 text-sm font-mono">
+                                        <div className="rounded-md border bg-muted/50 p-3 text-sm font-mono">
                                             <p>{selectedConversation.other_user.full_name || 'Reshipper'}</p>
                                             {selectedConversation.other_user.address_street && <p>{selectedConversation.other_user.address_street}</p>}
                                             {(selectedConversation.other_user.address_city || selectedConversation.other_user.address_state || selectedConversation.other_user.address_zip) && (
@@ -607,7 +610,7 @@ export default function InboxPage() {
                                                 navigator.clipboard.writeText(address)
                                             }}
                                         >
-                                            <Copy className="h-3 w-3" /> Copy Address
+                                            <Copy className="h-4 w-4" /> Copy Address
                                         </Button>
                                     </div>
                                 )}
@@ -617,7 +620,7 @@ export default function InboxPage() {
                                         <div className="grid grid-cols-2 gap-4">
                                             {selectedConversation.other_user.allowed_sites && selectedConversation.other_user.allowed_sites.length > 0 && (
                                                 <div className="space-y-2">
-                                                    <h4 className="font-medium leading-none flex items-center gap-2 text-foreground">
+                                                    <h4 className="font-medium text-sm flex items-center gap-2">
                                                         <Check className="h-4 w-4" /> Allowed Sites
                                                     </h4>
                                                     <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
@@ -629,7 +632,7 @@ export default function InboxPage() {
                                             )}
                                             {selectedConversation.other_user.banned_items && selectedConversation.other_user.banned_items.length > 0 && (
                                                 <div className="space-y-2">
-                                                    <h4 className="font-medium leading-none flex items-center gap-2 text-destructive">
+                                                    <h4 className="font-medium text-sm flex items-center gap-2">
                                                         <Ban className="h-4 w-4" /> Banned Items
                                                     </h4>
                                                     <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">

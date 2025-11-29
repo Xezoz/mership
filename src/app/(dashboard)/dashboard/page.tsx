@@ -83,7 +83,7 @@ export default function DashboardPage() {
     if (roleLoading) {
         return (
             <div className="flex items-center justify-center h-96">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -240,8 +240,16 @@ export default function DashboardPage() {
     }
 
     const getStatusColor = (status: string) => {
-        // Monochrome only - no colors
-        return 'bg-muted text-foreground'
+        switch (status) {
+            case 'completed':
+                return 'bg-green-500/10 text-green-500 border-green-500/20'
+            case 'pending':
+                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+            case 'failed':
+                return 'bg-red-500/10 text-red-500 border-red-500/20'
+            default:
+                return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
+        }
     }
 
     if (loading) {
@@ -249,7 +257,7 @@ export default function DashboardPage() {
             <div className="space-y-6">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-muted-foreground">Loading your overview...</p>
+                    <p className="text-muted-foreground">System Overview & Analytics</p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {[1, 2, 3, 4].map(i => (
@@ -272,7 +280,7 @@ export default function DashboardPage() {
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
                 <p className="text-muted-foreground">
-                    Welcome back! Here's an overview of your account.
+                    System Overview & Analytics
                 </p>
             </div>
 
@@ -317,7 +325,6 @@ export default function DashboardPage() {
             </div>
 
             {/* Shipment Overview Chart */}
-            {/* Shipment Overview Chart */}
             <UserCharts
                 data={chartData}
                 timeRange={timeRange}
@@ -331,37 +338,37 @@ export default function DashboardPage() {
                 <Card className="col-span-4">
                     <CardHeader>
                         <CardTitle>Recent Transactions</CardTitle>
-                        <CardDescription>Your latest payment activity</CardDescription>
+                        <CardDescription>Latest financial activity</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {stats.recentTransactions.length === 0 ? (
                             <div className="text-center py-8 text-muted-foreground">
-                                No transactions yet
+                                No transactions recorded
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {stats.recentTransactions.map((tx) => (
                                     <div key={tx.id} className="flex items-center justify-between border-b pb-4 last:border-0">
                                         <div className="flex items-center gap-4">
-                                            <div className="p-2 rounded-full bg-muted">
+                                            <div className="p-2 rounded bg-muted">
                                                 {tx.type === 'deposit' ? (
-                                                    <ArrowDownLeft className="h-4 w-4 text-foreground" />
+                                                    <ArrowDownLeft className="h-4 w-4 text-muted-foreground" />
                                                 ) : (
-                                                    <ArrowUpRight className="h-4 w-4 text-foreground" />
+                                                    <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="font-medium capitalize">{tx.type}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {new Date(tx.created_at).toLocaleDateString()} at {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                <p className="text-sm font-medium capitalize">{tx.type}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {new Date(tx.created_at).toLocaleDateString()} {new Date(tx.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <span className="font-semibold text-foreground">
+                                            <span className="font-medium">
                                                 {tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                             </span>
-                                            <Badge variant="outline" className="capitalize">
+                                            <Badge variant="outline" className={getStatusColor(tx.status)}>
                                                 {tx.status}
                                             </Badge>
                                         </div>
@@ -376,26 +383,27 @@ export default function DashboardPage() {
                 <Card className="col-span-3">
                     <CardHeader>
                         <CardTitle>Recent Activity</CardTitle>
+                        <CardDescription>Latest shipment updates</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-8">
                             {stats.recentActivity.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No recent activity</p>
+                                <p className="text-sm text-muted-foreground text-center py-4">No recent activity</p>
                             ) : (
                                 stats.recentActivity.map((item) => (
                                     <div key={item.id} className="flex items-center">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-background">
+                                        <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-muted">
                                             <Package className="h-4 w-4 text-muted-foreground" />
                                         </div>
                                         <div className="ml-4 space-y-1">
                                             <p className="text-sm font-medium leading-none">
                                                 {item.tracking_number}
                                             </p>
-                                            <p className="text-sm text-muted-foreground capitalize">
+                                            <p className="text-xs text-muted-foreground capitalize">
                                                 {item.status.replace('_', ' ')}
                                             </p>
                                         </div>
-                                        <div className="ml-auto font-medium text-xs text-muted-foreground">
+                                        <div className="ml-auto text-xs text-muted-foreground">
                                             {formatDistanceToNow(new Date(item.updated_at || item.created_at), { addSuffix: true })}
                                         </div>
                                     </div>

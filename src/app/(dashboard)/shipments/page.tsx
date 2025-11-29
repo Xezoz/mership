@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, Package, Loader2 } from 'lucide-react'
+import { Search, Package, Loader2, ArrowRight } from 'lucide-react'
 import {
     Select,
     SelectContent,
@@ -279,7 +279,16 @@ export default function ShipmentsPage() {
 
 
     const getStatusColor = (status: string) => {
-        return 'bg-secondary text-secondary-foreground'
+        switch (status) {
+            case 'completed':
+                return 'bg-green-500/10 text-green-500 border-green-500/20'
+            case 'pending':
+                return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+            case 'failed':
+                return 'bg-red-500/10 text-red-500 border-red-500/20'
+            default:
+                return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20'
+        }
     }
 
     const filteredShipments = shipments.filter((shipment) =>
@@ -299,7 +308,7 @@ export default function ShipmentsPage() {
     if (loading) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         )
     }
@@ -382,8 +391,8 @@ export default function ShipmentsPage() {
                 <CardContent>
                     {filteredShipments.length === 0 ? (
                         <div className="text-center py-12">
-                            <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground">
+                            <Package className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
+                            <p className="text-lg font-medium text-muted-foreground">
                                 {searchQuery ? 'No shipments found' : 'No shipments yet'}
                             </p>
                             {isCustomer && !searchQuery && (
@@ -417,7 +426,7 @@ export default function ShipmentsPage() {
                                             <div>
                                                 <p className="font-medium">{shipment.product_name || 'N/A'}</p>
                                                 {shipment.product_value && (
-                                                    <p className="text-sm text-muted-foreground">
+                                                    <p className="text-xs text-muted-foreground">
                                                         ${shipment.product_value.toFixed(2)}
                                                     </p>
                                                 )}
@@ -451,7 +460,7 @@ export default function ShipmentsPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge className={getStatusColor(shipment.status)}>
+                                            <Badge variant="outline" className={getStatusColor(shipment.status)}>
                                                 {shipment.status.replace('_', ' ')}
                                             </Badge>
                                         </TableCell>
@@ -462,7 +471,7 @@ export default function ShipmentsPage() {
                                                         value={shipment.status}
                                                         onValueChange={(value) => handleStatusUpdate(shipment.id, value)}
                                                     >
-                                                        <SelectTrigger className="w-[130px]">
+                                                        <SelectTrigger className="w-[130px] h-8">
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -482,8 +491,9 @@ export default function ShipmentsPage() {
                                                                 setSelectedDetailsShipment(shipment)
                                                                 setDetailsDialogOpen(true)
                                                             }}
+                                                            className="h-8"
                                                         >
-                                                            View Details
+                                                            Details
                                                         </Button>
                                                     )}
                                                 </div>
@@ -495,8 +505,8 @@ export default function ShipmentsPage() {
                                                     <Select
                                                         onValueChange={(value) => handleCustomerAction(shipment.id, value as 'ship' | 'discard', shipment.tracking_number)}
                                                     >
-                                                        <SelectTrigger className="w-[140px]">
-                                                            <SelectValue placeholder="Choose action" />
+                                                        <SelectTrigger className="w-[140px] h-8">
+                                                            <SelectValue placeholder="Action" />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="ship">Ship</SelectItem>
@@ -504,11 +514,11 @@ export default function ShipmentsPage() {
                                                         </SelectContent>
                                                     </Select>
                                                 ) : shipment.customer_action ? (
-                                                    <Badge variant="outline" className="capitalize">
+                                                    <Badge variant="secondary">
                                                         {shipment.customer_action}
                                                     </Badge>
                                                 ) : (
-                                                    <span className="text-sm text-muted-foreground">-</span>
+                                                    <span className="text-muted-foreground">-</span>
                                                 )}
                                             </TableCell>
                                         )}

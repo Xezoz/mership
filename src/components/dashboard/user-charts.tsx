@@ -11,7 +11,6 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 type ChartData = {
     date: string
@@ -44,10 +43,7 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                             variant="ghost"
                             size="sm"
                             onClick={() => setActiveChart('amount')}
-                            className={cn(
-                                "h-7 rounded-md px-3 text-xs font-medium",
-                                activeChart === 'amount' && "bg-muted shadow-sm"
-                            )}
+                            className={activeChart === 'amount' ? "bg-muted" : ""}
                         >
                             {amountLabel}
                         </Button>
@@ -55,24 +51,21 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                             variant="ghost"
                             size="sm"
                             onClick={() => setActiveChart('packages')}
-                            className={cn(
-                                "h-7 rounded-md px-3 text-xs font-medium",
-                                activeChart === 'packages' && "bg-muted shadow-sm"
-                            )}
+                            className={activeChart === 'packages' ? "bg-muted" : ""}
                         >
                             Packages
                         </Button>
                     </div>
                     <Select value={timeRange} onValueChange={onTimeRangeChange}>
                         <SelectTrigger
-                            className="w-[120px] h-9 rounded-lg"
+                            className="w-[160px] rounded-lg sm:ml-auto"
                             aria-label="Select time range"
                         >
-                            <SelectValue placeholder="Last 7 days" />
+                            <SelectValue placeholder="Last 3 months" />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl">
                             <SelectItem value="90d" className="rounded-lg">
-                                Last 90 days
+                                Last 3 months
                             </SelectItem>
                             <SelectItem value="30d" className="rounded-lg">
                                 Last 30 days
@@ -91,11 +84,11 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                             <AreaChart data={data}>
                                 <defs>
                                     <linearGradient id="fillAmount" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
+                                <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="date"
                                     tickLine={false}
@@ -146,7 +139,7 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                             </AreaChart>
                         ) : (
                             <BarChart data={data}>
-                                <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
+                                <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="date"
                                     tickLine={false}
@@ -167,7 +160,7 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                                     allowDecimals={false}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: 'hsl(var(--muted))', opacity: 0.2 }}
+                                    cursor={{ fill: 'hsl(var(--muted))', opacity: 0.1 }}
                                     content={({ active, payload }) => {
                                         if (active && payload && payload.length) {
                                             return (
@@ -192,7 +185,7 @@ export function UserCharts({ data, timeRange, onTimeRangeChange, amountLabel }: 
                                     dataKey="packages"
                                     fill="hsl(var(--primary))"
                                     radius={[4, 4, 0, 0]}
-                                    maxBarSize={50}
+                                    maxBarSize={40}
                                 />
                             </BarChart>
                         )}
