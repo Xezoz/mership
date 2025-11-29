@@ -414,58 +414,66 @@ export default function InboxPage() {
                         {conversations.length === 0 && !isCustomer && !isReshipper && !isModerator && (
                             <div className="p-4 text-center text-sm text-muted-foreground">No conversations yet</div>
                         )}
-                        {conversations
                             .filter(conv => {
+                            console.log('Filter check:', {
+                                convId: conv.id,
+                                otherUserRole: conv.other_user?.role,
+                                isModerator,
+                                isReshipper,
+                                isCustomer,
+                                willShow: isModerator ? conv.other_user?.role !== 'reshipper' : true
+                            })
+                                
                                 // For customers: exclude conversations with moderators and reshippers
                                 if (isCustomer) {
                                     return conv.other_user?.role !== 'moderator' && conv.other_user?.role !== 'reshipper'
                                 }
-                                // For reshippers: exclude conversations with moderators (Support)
-                                if (isReshipper) {
+                        // For reshippers: exclude conversations with moderators (Support)
+                        if (isReshipper) {
                                     return conv.other_user?.role !== 'moderator'
                                 }
-                                // For moderators: exclude reshippers (shown in Available Reshippers)
-                                if (isModerator) {
+                        // For moderators: exclude reshippers (shown in Available Reshippers)
+                        if (isModerator) {
                                     return conv.other_user?.role !== 'reshipper'
                                 }
-                                return true
+                        return true
                             })
                             .map((conv) => (
-                                <button
-                                    key={conv.id}
-                                    onClick={() => setSelectedConversation(conv)}
-                                    className={`flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
-                                >
-                                    <Avatar>
-                                        <AvatarImage src={conv.other_user?.avatar_url || undefined} />
-                                        <AvatarFallback>{conv.other_user?.full_name?.[0] || 'U'}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex-1 overflow-hidden">
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
-                                            <span className="text-xs text-muted-foreground">
-                                                {(() => {
-                                                    if (!conv.last_message_at) return 'No messages'
-                                                    const date = new Date(conv.last_message_at)
-                                                    const now = new Date()
-                                                    const diffMs = now.getTime() - date.getTime()
-                                                    const diffMins = Math.floor(diffMs / 60000)
-                                                    const diffHours = Math.floor(diffMs / 3600000)
-                                                    const diffDays = Math.floor(diffMs / 86400000)
+                        <button
+                            key={conv.id}
+                            onClick={() => setSelectedConversation(conv)}
+                            className={`flex items-start gap-3 p-4 text-left transition-colors hover:bg-muted/50 ${selectedConversation?.id === conv.id ? 'bg-muted' : ''}`}
+                        >
+                            <Avatar>
+                                <AvatarImage src={conv.other_user?.avatar_url || undefined} />
+                                <AvatarFallback>{conv.other_user?.full_name?.[0] || 'U'}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 overflow-hidden">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold">{conv.other_user?.full_name || 'User'}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {(() => {
+                                            if (!conv.last_message_at) return 'No messages'
+                                            const date = new Date(conv.last_message_at)
+                                            const now = new Date()
+                                            const diffMs = now.getTime() - date.getTime()
+                                            const diffMins = Math.floor(diffMs / 60000)
+                                            const diffHours = Math.floor(diffMs / 3600000)
+                                            const diffDays = Math.floor(diffMs / 86400000)
 
-                                                    if (diffMins < 1) return 'Just now'
-                                                    if (diffMins < 60) return `${diffMins}m ago`
-                                                    if (diffHours < 24) return `${diffHours}h ago`
-                                                    if (diffDays < 7) return `${diffDays}d ago`
-                                                    return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
-                                                })()}
-                                            </span>
-                                        </div>
-                                        <p className="truncate text-sm text-muted-foreground">
-                                            {conv.last_message || 'No messages yet'}
-                                        </p>
-                                    </div>
-                                </button>
+                                            if (diffMins < 1) return 'Just now'
+                                            if (diffMins < 60) return `${diffMins}m ago`
+                                            if (diffHours < 24) return `${diffHours}h ago`
+                                            if (diffDays < 7) return `${diffDays}d ago`
+                                            return date.toLocaleDateString([], { month: 'short', day: 'numeric' })
+                                        })()}
+                                    </span>
+                                </div>
+                                <p className="truncate text-sm text-muted-foreground">
+                                    {conv.last_message || 'No messages yet'}
+                                </p>
+                            </div>
+                        </button>
                             ))}
                     </div>
                 </ScrollArea>
