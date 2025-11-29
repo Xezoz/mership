@@ -31,10 +31,7 @@ export function Sidebar() {
         <>
             {/* Mobile Header with Menu Button */}
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between border-b bg-background px-4">
-                <div className="flex items-center gap-2">
-                    <Logo className="h-10 w-10 text-primary" />
-                    <span className="font-normal text-lg">MERSHIP</span>
-                </div>
+                <Logo className="h-10 w-10 text-primary" />
                 <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -48,9 +45,8 @@ export function Sidebar() {
                         </VisuallyHidden>
                         <div className="flex h-full flex-col">
                             {/* Logo */}
-                            <div className="flex h-16 items-center gap-2 border-b px-6">
+                            <div className="flex h-16 items-center border-b px-6">
                                 <Logo className="h-10 w-10 text-primary" />
-                                <span className="font-normal text-lg">MERSHIP</span>
                             </div>
 
                             {/* Navigation */}
@@ -90,9 +86,8 @@ export function Sidebar() {
             {/* Desktop Sidebar */}
             <div className="hidden md:flex h-full w-64 flex-col bg-card border-r">
                 {/* Logo */}
-                <div className="flex h-16 items-center gap-2 border-b px-6">
+                <div className="flex h-16 items-center border-b px-6">
                     <Logo className="h-10 w-10 text-primary" />
-                    <span className="font-normal text-lg">MERSHIP</span>
                 </div>
 
                 {/* Navigation */}
