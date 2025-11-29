@@ -107,18 +107,6 @@ export default function InboxPage() {
                 })
                 const uniqueConversations = Array.from(uniqueConversationsMap.values())
 
-                console.log('Inbox Debug:', {
-                    role,
-                    isModerator,
-                    totalConvs: uniqueConversations.length,
-                    convs: uniqueConversations.map(c => ({
-                        id: c.id,
-                        other_user_id: c.other_user?.id,
-                        other_user_role: c.other_user?.role,
-                        other_user_name: c.other_user?.full_name
-                    }))
-                })
-
                 setConversations(uniqueConversations)
             } catch (error) {
                 console.error('Error fetching conversations:', error)
@@ -163,12 +151,6 @@ export default function InboxPage() {
             if (error) {
                 console.error('Error fetching available users:', error)
             } else if (data) {
-                console.log('Available Users Debug:', {
-                    isModerator,
-                    isReshipper,
-                    isCustomer,
-                    fetchedUsers: data.map(u => ({ id: u.id, name: u.full_name, role: u.role }))
-                })
                 setReshippers(data.filter(p => p.role === 'reshipper'))
                 setModerators(data.filter(p => p.role === 'moderator'))
             }
@@ -416,15 +398,6 @@ export default function InboxPage() {
                         )}
                         {conversations
                             .filter(conv => {
-                                console.log('Filter check:', {
-                                    convId: conv.id,
-                                    otherUserRole: conv.other_user?.role,
-                                    isModerator,
-                                    isReshipper,
-                                    isCustomer,
-                                    willShow: isModerator ? conv.other_user?.role !== 'reshipper' : true
-                                })
-
                                 // For customers: exclude conversations with moderators and reshippers
                                 if (isCustomer) {
                                     return conv.other_user?.role !== 'moderator' && conv.other_user?.role !== 'reshipper'
