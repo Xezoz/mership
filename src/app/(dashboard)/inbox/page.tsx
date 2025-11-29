@@ -51,7 +51,7 @@ export default function InboxPage() {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const supabase = createBrowserClient()
-    const { role, isCustomer, isReshipper, isModerator } = useUserRole()
+    const { role, isCustomer, isReshipper, isModerator, loading: roleLoading } = useUserRole()
     const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -60,6 +60,9 @@ export default function InboxPage() {
 
     // Fetch Conversations (for both roles)
     useEffect(() => {
+        // Wait for role to load before fetching
+        if (roleLoading) return
+
         const fetchConversations = async () => {
             try {
                 const { data: { user } } = await supabase.auth.getUser()
@@ -134,10 +137,12 @@ export default function InboxPage() {
         return () => {
             subscription.unsubscribe()
         }
-    }, [supabase])
+    }, [supabase, roleLoading, role, isModerator])
 
     // Fetch Reshippers and Moderators (only for customers)
     useEffect(() => {
+        // Wait for role to load
+        if (roleLoading) return
         if (!isCustomer && !isReshipper && !isModerator) return
 
         const fetchAvailableUsers = async () => {
@@ -170,7 +175,7 @@ export default function InboxPage() {
         }
 
         fetchAvailableUsers()
-    }, [isCustomer, isReshipper, isModerator, supabase])
+    }, [isCustomer, isReshipper, isModerator, supabase, roleLoading])
 
     // Fetch Messages for Selected Conversation
     useEffect(() => {
