@@ -62,54 +62,80 @@ export default function LoginPage() {
 
     return (
         <div className="flex min-h-screen">
-            {/* Left side - Futuristic Reshipping Design */}
+            {/* Left side - Palantir-inspired Design */}
             <div className="hidden lg:flex lg:w-1/2 bg-black p-12 items-center justify-center relative overflow-hidden">
-                {/* Animated grid background */}
+                {/* Network grid background */}
                 <div className="absolute inset-0">
-                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.03),transparent_50%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:3rem_3rem]" />
                 </div>
 
-                {/* Geometric shipping route accents */}
-                <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse" />
-                <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-white/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute top-20 right-20 w-64 h-64 border border-white/10 rotate-45" />
-                <div className="absolute bottom-20 left-20 w-48 h-48 border border-white/5 rotate-12" />
+                {/* Network nodes and connections */}
+                <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="20%" y1="30%" x2="40%" y2="50%" stroke="white" strokeWidth="0.5" opacity="0.3" />
+                    <line x1="40%" y1="50%" x2="60%" y2="40%" stroke="white" strokeWidth="0.5" opacity="0.3" />
+                    <line x1="60%" y1="40%" x2="80%" y2="60%" stroke="white" strokeWidth="0.5" opacity="0.3" />
+                    <line x1="30%" y1="70%" x2="50%" y2="80%" stroke="white" strokeWidth="0.5" opacity="0.3" />
+                    <circle cx="20%" cy="30%" r="3" fill="white" opacity="0.6" />
+                    <circle cx="40%" cy="50%" r="4" fill="white" opacity="0.8" />
+                    <circle cx="60%" cy="40%" r="3" fill="white" opacity="0.6" />
+                    <circle cx="80%" cy="60%" r="3" fill="white" opacity="0.6" />
+                    <circle cx="30%" cy="70%" r="3" fill="white" opacity="0.6" />
+                    <circle cx="50%" cy="80%" r="3" fill="white" opacity="0.6" />
+                </svg>
 
-                <div className="relative z-10 text-white space-y-8 max-w-md">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white border-2 border-white/20 shadow-lg shadow-white/10">
-                            <Package className="h-8 w-8 text-black" />
+                <div className="relative z-10 text-white space-y-10 max-w-md">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded bg-white">
+                                <Package className="h-6 w-6 text-black" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-light tracking-widest">MERSHIP</h1>
+                                <p className="text-[10px] text-zinc-500 tracking-widest">RESHIPPING INTELLIGENCE</p>
+                            </div>
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight">Mership</h1>
                     </div>
 
-                    <div className="space-y-4">
-                        <h2 className="text-5xl font-bold leading-tight tracking-tight">
-                            Global Shipping,
-                            <span className="block bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-                                Simplified
-                            </span>
-                        </h2>
-                        <p className="text-lg text-zinc-400 leading-relaxed">
-                            Your packages, reshipped worldwide. Connect with trusted reshippers and manage international deliveries effortlessly.
+                    <div className="space-y-6">
+                        <div className="space-y-3">
+                            <div className="text-xs text-zinc-500 tracking-widest font-mono">PLATFORM // ACCESS</div>
+                            <h2 className="text-4xl font-light leading-tight tracking-tight">
+                                Global Package
+                                <span className="block font-normal">Intelligence Network</span>
+                            </h2>
+                        </div>
+                        <p className="text-sm text-zinc-400 leading-relaxed font-light">
+                            Orchestrate international package flows with precision.
+                            Connect verified reshippers across continents through our secure intelligence platform.
                         </p>
                     </div>
 
-                    {/* Feature highlights */}
-                    <div className="space-y-3 pt-4">
-                        <div className="flex items-center gap-3 text-sm">
-                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                            <span className="text-zinc-300">International package forwarding</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm">
-                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                            <span className="text-zinc-300">Trusted reshipper network</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm">
-                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
-                            <span className="text-zinc-300">Real-time tracking & updates</span>
+                    {/* Capabilities */}
+                    <div className="space-y-4">
+                        <div className="text-xs text-zinc-500 tracking-widest font-mono">CAPABILITIES</div>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3 text-xs">
+                                <div className="mt-1 h-1 w-1 rounded-full bg-white" />
+                                <div className="space-y-0.5">
+                                    <div className="text-white font-light">Network Orchestration</div>
+                                    <div className="text-zinc-500 text-[10px]">Real-time reshipper coordination</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3 text-xs">
+                                <div className="mt-1 h-1 w-1 rounded-full bg-white" />
+                                <div className="space-y-0.5">
+                                    <div className="text-white font-light">Package Intelligence</div>
+                                    <div className="text-zinc-500 text-[10px]">Advanced tracking & analytics</div>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3 text-xs">
+                                <div className="mt-1 h-1 w-1 rounded-full bg-white" />
+                                <div className="space-y-0.5">
+                                    <div className="text-white font-light">Secure Operations</div>
+                                    <div className="text-zinc-500 text-[10px]">End-to-end encrypted logistics</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
