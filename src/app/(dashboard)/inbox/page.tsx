@@ -396,6 +396,12 @@ export default function InboxPage() {
                         {conversations.length === 0 && !isCustomer && !isReshipper && !isModerator && (
                             <div className="p-4 text-center text-sm text-muted-foreground">No conversations yet</div>
                         )}
+
+                        {/* Add header for moderator conversations */}
+                        {isModerator && conversations.filter(conv => conv.other_user?.role !== 'reshipper').length > 0 && (
+                            <div className="px-4 py-2 text-xs font-semibold text-muted-foreground mt-2">Your Conversations</div>
+                        )}
+
                         {conversations
                             .filter(conv => {
                                 // For customers: exclude conversations with moderators and reshippers
